@@ -1,0 +1,13 @@
+#!/bin/bash
+# set-best FILE SCORE ARTIFACT [NOTE]: write "SCORE ARTIFACT NOTE" to FILE only if SCORE beats the score already there.
+# flock + atomic mv, so agents writing at the same moment can never lower it and a reader never sees half a file.
+# Exit 0 = raised, 2 = kept the existing (higher or equal) score.
+f=$1 s=$2 p=$3 n=$4
+[[ -n $f && $s =~ ^[0-9.]+$ && -e $p ]] || { echo "usage: set-best FILE SCORE ARTIFACT [NOTE]"; exit 1; }
+exec 9>"$f.lock"; flock -w 10 9 || { echo "lock busy, retry"; exit 1; }
+cur=$(awk '{print $1}' "$f" 2>/dev/null); cur=${cur:-0}
+if awk -v a="$s" -v b="$cur" 'BEGIN { exit !(a > b) }'; then
+  echo "$s $p${n:+ $n}" > "$f.tmp" && mv "$f.tmp" "$f" && echo "$f: $cur -> $s"
+else
+  echo "kept $f at $cur (yours $s)"; exit 2
+fi
