@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Recreate the final leaderboard as shown on screen at the event: leaderboard.json -> leaderboard.html -> img/leaderboard.png.
 
-leaderboard.json is a transcription of the photo (img/leaderboard-photo.jpg), with names cut off where the screen cut
+leaderboard.json is a transcription of a photo of the screen at the event, with names cut off where the screen cut
 them. Needs google-chrome; optipng is used if installed.
 """
 import html

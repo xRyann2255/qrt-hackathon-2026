@@ -6,9 +6,6 @@ for two hours on HackerRank: four optimisation problems and a bonus.
 
 ![The final leaderboard, with Mite first on 3987.89](img/leaderboard.png)
 
-*A recreation of the final leaderboard as it was shown on screen at the event, redrawn from
-[this photo of the screen](img/leaderboard-photo.jpg).*
-
 I wrote very little of the code by hand. Instead I was typing for the whole two hours, steering the AI agents that
 wrote it. For each problem I told them how I thought it should be approached and gave them my intuition for the best
 way to solve it. I was also the orchestrator: I decided what each agent worked on, where the compute went, what got
@@ -233,7 +230,7 @@ solutions/q1 .. q5   the final submitted code, unchanged, each with a README (ap
 tools/set-best       write a score file only if the new score is higher (flock + atomic rename)
 tools/capture.py     recover inputs that a submission echoed to stderr
 LINKEDIN.md          draft posts
-img/leaderboard.png  the final leaderboard, redrawn from leaderboard-photo.jpg (the photo at the event, straightened)
+img/leaderboard.png  the final leaderboard, redrawn in HD from a photo of the screen at the event
 tools/leaderboard/   every row read from the photo (leaderboard.json) and render.py, which checks them and draws the png
 img/pane-grid.png    screenshot of the browser grid of agent terminals
 docs/                interactive pages for Q1, Q2, Q4, Q5: the solvers in WebAssembly and Pyodide (docs/build.sh)
