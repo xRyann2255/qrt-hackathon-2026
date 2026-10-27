@@ -20,7 +20,11 @@
   .pane.q4 { grid-column: 1 / 3; grid-row: 1 / 3; }
   .pane.q5 { grid-column: 3 / 5; }
   .bar span { text-decoration: underline 1px var(--accent); text-underline-offset: 0.2em; color: var(--ink); }
-  .pane:hover .bar span { color: var(--accent); }
+  /* Hover: the pane lifts slightly and its frame turns orange */
+  .pane { position: relative; transition: transform 0.12s ease-out, box-shadow 0.12s ease-out; }
+  .pane:hover, .pane:active, .pane:focus-visible { z-index: 1; transform: scale(1.015); outline: none;
+    box-shadow: 0 0 0 3px var(--hot), 0 14px 32px rgb(0 0 0 / 0.45); }
+  .pane:hover .bar span, .pane:focus-visible .bar span { color: var(--hot); }
   .pane svg { width: 100%; height: 100%; padding: 1.25rem; display: block; min-height: 0; }
   .pane.q4 svg { padding: 2rem; }
   .panes .loop { stroke-dasharray: 1; animation: draw 2.6s cubic-bezier(0.45, 0, 0.25, 1) 0.3s both; }
