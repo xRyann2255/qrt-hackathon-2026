@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Draw img/scores.png: every team's total from the final leaderboard, one dot per team.
+"""Draw img/scores.png: a histogram of every team's total from the final leaderboard.
 
 Totals transcribed from the leaderboard photo (img/leaderboard.jpg), in rank order. Their mean, 2301.35, matches the
 average the leaderboard showed.
 """
+import statistics
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+from matplotlib.ticker import MaxNLocator
 
 TOTALS = [
     3987.89, 3636.04, 3590.67, 3466.88, 3433.81, 3428.61, 3394.79, 3321.44, 3174.02, 3167.09, 3164.87, 3136.90,
@@ -18,40 +22,40 @@ TOTALS = [
 ]
 assert len(TOTALS) == 68 and round(sum(TOTALS) / 68, 2) == 2301.35
 
-BG, INK, MUTED, RULE, DOT, ACCENT = "#121418", "#e7e9ee", "#9aa1ad", "#2e333c", "#6b7280", "#8ea5ff"
-BIN, MAX = 200, 4300
+BG, INK, MUTED, GRID, BAR, ACCENT = "#121418", "#e7e9ee", "#9aa1ad", "#2e333c", "#7a8394", "#8ea5ff"
+WIDTH, MAX = 250, 4300
+mean, median, mite = statistics.mean(TOTALS), statistics.median(TOTALS), TOTALS[0]
 
-# Stack the dots in each 200 point bin, lowest score at the bottom
-height = {}
-xs, ys = [], []
-for t in sorted(TOTALS):
-    b = int(t // BIN)
-    height[b] = height.get(b, 0) + 1
-    xs.append(b * BIN + BIN / 2)
-    ys.append(height[b])
-
-fig, ax = plt.subplots(figsize=(10, 4.2), dpi=200)
+plt.rcParams.update({"text.color": INK, "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED})
+fig, ax = plt.subplots(figsize=(10, 5), dpi=200)
 fig.patch.set_facecolor(BG)
 ax.set_facecolor(BG)
-ax.scatter(xs[:-1], ys[:-1], s=150, color=DOT, linewidths=0, zorder=2)
-ax.scatter(xs[-1], ys[-1], s=150, color=ACCENT, linewidths=0, zorder=3)  # the top score is last after sorting
 
-mean = sum(TOTALS) / len(TOTALS)
-ax.axvline(mean, color=MUTED, lw=1, ls=(0, (3, 3)), zorder=1)
-ax.text(mean - 40, 9.3, f"Average {mean:.2f}", color=MUTED, fontsize=10, va="top", ha="right")
-ax.text(xs[-1], ys[-1] + 0.8, "Mite (me)\n1st, 3987.89", color=ACCENT, fontsize=10.5, fontweight="bold",
-        ha="center", va="bottom", linespacing=1.3)
+edges = list(range(0, MAX + WIDTH, WIDTH))
+_, _, bars = ax.hist(TOTALS, bins=edges, color=BAR, edgecolor=BG, linewidth=1.5, zorder=2)
+for bar in bars:
+    if bar.get_x() <= mite < bar.get_x() + WIDTH:
+        bar.set_facecolor(ACCENT)  # the bin holding Mite's score, which no other team reached
+
+ax.axvline(mean, color=INK, lw=1.2, ls="--", zorder=3)
+ax.axvline(median, color=INK, lw=1.2, ls=":", zorder=3)
+ax.legend(handles=[
+    Patch(color=BAR, label="Other teams"),
+    Patch(color=ACCENT, label=f"Mite (me), 1st: {mite:.2f}"),
+    plt.Line2D([], [], color=INK, lw=1.2, ls="--", label=f"Mean: {mean:.2f}"),
+    plt.Line2D([], [], color=INK, lw=1.2, ls=":", label=f"Median: {median:.2f}"),
+], loc="upper left", frameon=True, facecolor=BG, edgecolor=GRID, labelcolor=INK, fontsize=10)
 
 ax.set_xlim(0, MAX)
-ax.set_ylim(0.3, 9.6)
 ax.set_xticks(range(0, MAX + 1, 500))
-ax.set_yticks([])
-ax.tick_params(colors=MUTED, labelsize=9.5, length=0, pad=6)
-for side in ("top", "right", "left"):
+ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+ax.grid(axis="y", color=GRID, lw=0.8, zorder=0)
+for side in ("top", "right"):
     ax.spines[side].set_visible(False)
-ax.spines["bottom"].set_color(RULE)
-ax.set_xlabel("Total score, out of a possible 4300", color=MUTED, fontsize=10, labelpad=8)
-fig.text(0.03, 0.93, "Total scores of all 68 teams", color=INK, fontsize=13, fontweight="bold")
-fig.text(0.03, 0.865, "Each dot is one team, grouped in steps of 200 points.", color=MUTED, fontsize=10)
-fig.subplots_adjust(left=0.03, right=0.97, top=0.8, bottom=0.17)
+for side in ("left", "bottom"):
+    ax.spines[side].set_color(MUTED)
+ax.set_xlabel(f"Total score (out of {MAX}), bins of {WIDTH} points", fontsize=11)
+ax.set_ylabel("Number of teams", fontsize=11)
+ax.set_title("Distribution of total scores, all 68 teams", fontsize=13, pad=12)
+fig.tight_layout()
 fig.savefig("img/scores.png", facecolor=BG)
