@@ -47,7 +47,9 @@
   const back = v => v.map((x, j) => `V${y(x).toFixed(1)}H${j * W / N}`).reverse().join('');  // path, right to left
   const at = (id, v) => $(id).style.top = y(v) / H * 100 + '%';  // an HTML label beside the plot, level with v
 
+  let hold;  // the 5 s pause on the final frame before the loop restarts; every restart clears it, so one loop runs
   function show(i) {
+    clearTimeout(hold);
     const F = all[i], g = F[22], d = F.slice(1).map((f, s) => f.map((v, j) => v - F[s][j]));
     const vals = [...F, ...d].flat(), lo = Math.min(...vals), hi = Math.max(...vals);
     y = v => PAD + (hi - v) / (hi - lo) * (H - 2 * PAD);
@@ -79,6 +81,7 @@
       draw(F[s].map((v, j) => v + e * d[s][j]));
       wl.style.opacity = 0.5 * Math.sin(Math.PI * u);
       if (u === 1) readout(s + 1);
+      if (n === 22 * S - 1 && !still.matches) hold = setTimeout(() => show(i), 5000);  // the last step, also after Skip
     }, () => show(i), 22 * 300);
   }
   $('t').oninput = e => show(+e.target.value);
