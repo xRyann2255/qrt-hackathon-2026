@@ -37,7 +37,7 @@
       <label>Rows <input id="R" type="number" value="12" min="6" max="50"></label>
       <label>Columns <input id="C" type="number" value="12" min="6" max="50"></label>
     </div>
-    <p class="note" style="margin-top: 0.75rem">Generate and Empty grid use this size. Tap a cell to cycle it: empty, white pearl, black pearl.</p>
+    <p class="note" style="margin-top: 0.75rem">Generate and Empty grid use this size.</p>
     <div class="run">
       <label>Time budget (s) <input id="tl" type="number" value="1" min="0.1" max="9" step="0.1"></label>
       <button class="primary" id="go">Find a loop</button>
@@ -54,6 +54,8 @@
     <div class="bar"><b>Q4 Masyu</b></div>
     <div class="stagebar"><p id="status" role="status">Loading the solver</p><button id="skip" hidden>Skip animation</button></div>
     <svg id="out" width="0" height="0" role="img" aria-label="The Masyu board"></svg>
+    <p class="legend"><b>Left click</b> a cell for a white pearl, <b>right click</b> for a black pearl. Left clicking again
+    cycles white, black, empty; on a phone, tap to cycle.</p>
   </figure>
 </main>
 <footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
@@ -186,15 +188,19 @@ function draw() {
 function reset(rows, note, p = 0) { puz = rows; planted = p; loop = null; draw(); status(note || 'Press Find a loop to solve this puzzle.'); metrics([]); }
 function size() { return [Math.min(50, Math.max(6, +$('R').value || 12)), Math.min(50, Math.max(6, +$('C').value || 12))]; }
 
-$('out').onclick = e => {
+// Left click cycles empty, white, black; right click toggles a black pearl
+function edit(e, next) {
   const r = e.target.dataset.r, c = e.target.dataset.c;
   if (r === undefined) return;
+  e.preventDefault();
   const row = [...puz[r]];
-  row[c] = {'.': 'W', W: 'B', B: '.'}[row[c]];
+  row[c] = next(row[c]);
   puz[r] = row.join('');
   reset(puz);
-};
-$('clear').onclick = () => { const [R, C] = size(); reset(Array(R).fill('.'.repeat(C)), 'Tap cells to place pearls, then press Find a loop.'); };
+}
+$('out').onclick = e => edit(e, p => ({'.': 'W', W: 'B', B: '.'})[p]);
+$('out').oncontextmenu = e => edit(e, p => p === 'B' ? '.' : 'B');
+$('clear').onclick = () => { const [R, C] = size(); reset(Array(R).fill('.'.repeat(C)), 'Click cells to place pearls, then press Find a loop.'); };
 $('example').onclick = () => { reset(['......', '.W....', '....B.', '......', '.B....', '....W.'], 'The statement says the shortest loop here has 18 cells.'); };
 $('gen').onclick = () => { const [R, C] = size(); generate(R, C); reset(puz, `Generated around a planted loop of ${planted} cells.`, planted); };
 
