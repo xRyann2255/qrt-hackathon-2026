@@ -6,9 +6,11 @@ for two hours on HackerRank: four optimisation problems and a bonus.
 
 I wrote very little of the code by hand. Instead I was typing for the whole two hours, steering the AI agents that
 wrote it. For each problem I told them how I thought it should be approached and gave them my intuition for the best
-way to solve it. I ran a fleet of these agents, one or more per question, and decided what they worked on and what
-got submitted. This repo has the final submitted code for all five questions and an
-account of how it was done.
+way to solve it. I was also the orchestrator: I decided what each agent worked on, where the compute went, what got
+merged and what got saved.
+
+I ran a fleet of these agents, one or more per question. This repo has the final submitted code for all five
+questions and an account of how it was done.
 
 The problem statements are in [QUESTIONS.md](QUESTIONS.md). Interactive versions of Q1, Q2, Q4 and Q5, which run the
 solvers in the browser on your own input, are in [docs/](docs).
