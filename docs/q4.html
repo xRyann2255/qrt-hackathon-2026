@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q4 Masyu</title>
+<link rel="stylesheet" href="style.css">
+<style>#out { cursor: pointer; touch-action: manipulation; }</style>
+</head>
+<body>
+<nav><a href="index.html">QRT hackathon demos</a> / Q4</nav>
+<h1>Q4. Masyu</h1>
+<p>Draw one closed loop through cell centres that visits every pearl. It goes straight through white pearls and turns
+next to them; it turns on black pearls and goes straight on both sides. Shorter loops score more.
+<a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q4-masyu">Full question</a></p>
+<p class="note">Runs the submitted C++ live solver (propagation, depth first search, then large neighbourhood search for
+shorter loops), compiled to WebAssembly. The submission also held 103 loops found offline with CP-SAT for the hidden tests;
+that table is removed here. The live solver alone scored 916.72 of 1000; the table took it to 960.81.</p>
+
+<div class="row">
+  <label>Rows <input id="R" type="number" value="10" min="6" max="50"></label>
+  <label>Columns <input id="C" type="number" value="10" min="6" max="50"></label>
+  <button id="clear">Empty grid</button>
+  <button id="example">Statement example</button>
+  <button id="gen">Generate</button>
+</div>
+<div class="row">
+  <label>Time budget (s) <input id="tl" type="number" value="1" min="0.1" max="9" step="0.1"></label>
+  <button class="go" id="go">Solve</button>
+</div>
+<p class="note">Click a cell to cycle: empty, white pearl, black pearl.</p>
+<div id="status"></div>
+<svg id="out" width="0" height="0"></svg>
+
+<script src="app.js"></script>
+<script>
+const D = {N: [-1, 0], S: [1, 0], E: [0, 1], W: [0, -1]}, OPP = {N: 'S', S: 'N', E: 'W', W: 'E'};
+const CH = {'-': 'EW', '|': 'NS', L: 'NE', J: 'NW', F: 'SE', 7: 'SW'};
+const CHAR_OF = Object.fromEntries(Object.entries(CH).map(([k, v]) => [[...v].sort().join(''), k]));
+const straight = ch => ch === '-' || ch === '|';
+let puz = [], loop = null, planted = 0;
+
+function pearlErr(out, r, c, p) {  // null if pearl p at (r, c) is satisfied by the loop
+  const ch = out[r][c];
+  if (ch === '.') return 'not on the loop';
+  const nb = [...CH[ch]].map(d => out[r + D[d][0]][c + D[d][1]]);
+  if (p === 'W') return !straight(ch) ? 'white pearl not straight' : straight(nb[0]) && straight(nb[1]) ? 'white pearl with no turn beside it' : null;
+  if (straight(ch)) return 'black pearl not a turn';
+  return [...CH[ch]].every((d, i) => nb[i] === ('NS'.includes(d) ? '|' : '-')) ? null : 'black pearl without straight neighbours';
+}
+
+function check(out) {  // loop length, or throws
+  const R = puz.length, C = puz[0].length;
+  if (out.length !== R || out.some(row => row.length !== C || /[^.\-|LJF7]/.test(row))) throw Error('no loop found');
+  const cells = [];
+  out.forEach((row, r) => [...row].forEach((ch, c) => ch !== '.' && cells.push([r, c])));
+  if (!cells.length) throw Error('no loop found');
+  for (const [r, c] of cells) for (const d of CH[out[r][c]]) {
+    const n = out[r + D[d][0]]?.[c + D[d][1]];
+    if (!n || !(CH[n] || '').includes(OPP[d])) throw Error(`loop broken at row ${r}, column ${c}`);
+  }
+  const seen = new Set([cells[0].join()]), stack = [cells[0]];
+  while (stack.length) {
+    const [r, c] = stack.pop();
+    for (const d of CH[out[r][c]]) {
+      const n = [r + D[d][0], c + D[d][1]];
+      if (!seen.has(n.join())) { seen.add(n.join()); stack.push(n); }
+    }
+  }
+  if (seen.size !== cells.length) throw Error('more than one loop');
+  puz.forEach((row, r) => [...row].forEach((p, c) => {
+    const e = p !== '.' && pearlErr(out, r, c, p);
+    if (e) throw Error(`${e} at row ${r}, column ${c}`);
+  }));
+  return cells.length;
+}
+
+// Generator, ported from the team's gen.py: grow a random region, with no holes, of the squares between cell
+// centres; its boundary is a valid loop. Pearls go where a rule holds on that loop, about a third of them kept.
+function generate(R, C) {
+  const H = R - 1, W = C - 1, reg = new Set(), NB4 = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+  const inr = (i, j) => i >= 0 && i < H && j >= 0 && j < W && reg.has(i * W + j);
+  const ok = (i, j) => {
+    const k4 = NB4.map(([a, b]) => inr(i + a, j + b)), k = k4.filter(Boolean).length;
+    if (k === 0 || k === 4 || k4.filter((v, t) => v !== k4[(t + 3) % 4]).length !== 2) return false;
+    for (let t = 0; t < 4; t++) {
+      const [a1, b1] = NB4[t], [a2, b2] = NB4[(t + 1) % 4];
+      if (inr(i + a1 + a2, j + b1 + b2) && !k4[t] && !k4[(t + 1) % 4]) return false;
+    }
+    return true;
+  };
+  reg.add(Math.floor(Math.random() * H) * W + Math.floor(Math.random() * W));
+  // ponytail: full frontier rescan per step, O(area^2) worst case; fine at 49 x 49 squares
+  while (reg.size < H * W / 2) {
+    const cand = new Set();
+    for (const s of reg) for (const [a, b] of NB4) {
+      const i = Math.floor(s / W) + a, j = s % W + b;
+      if (i >= 0 && i < H && j >= 0 && j < W && !reg.has(i * W + j) && ok(i, j)) cand.add(i * W + j);
+    }
+    if (!cand.size) break;
+    reg.add([...cand][Math.floor(Math.random() * cand.size)]);
+  }
+  const dirs = Array.from({length: R}, () => Array(C).fill(''));
+  for (const s of reg) {
+    const i = Math.floor(s / W), j = s % W;
+    if (!inr(i - 1, j)) { dirs[i][j] += 'E'; dirs[i][j + 1] += 'W'; }
+    if (!inr(i + 1, j)) { dirs[i + 1][j] += 'E'; dirs[i + 1][j + 1] += 'W'; }
+    if (!inr(i, j - 1)) { dirs[i][j] += 'S'; dirs[i + 1][j] += 'N'; }
+    if (!inr(i, j + 1)) { dirs[i][j + 1] += 'S'; dirs[i + 1][j + 1] += 'N'; }
+  }
+  const sol = dirs.map(row => row.map(d => d ? CHAR_OF[[...d].sort().join('')] : '.').join(''));
+  const cand = [];
+  sol.forEach((row, r) => [...row].forEach((ch, c) => ch !== '.' && 'WB'.split('').forEach(p => !pearlErr(sol, r, c, p) && cand.push([r, c, p]))));
+  let keep = cand.filter(() => Math.random() < 0.35);
+  if (keep.length < 2) keep = cand.slice(0, 2);
+  puz = Array.from({length: R}, () => Array(C).fill('.'));
+  for (const [r, c, p] of keep) puz[r][c] = p;
+  puz = puz.map(row => row.join(''));
+  planted = sol.join('').replace(/\./g, '').length;
+}
+
+function draw() {
+  const R = puz.length, C = puz[0].length, S = 24, svg = $('out');
+  svg.replaceChildren();
+  svg.setAttribute('viewBox', `-1 -1 ${C * S + 2} ${R * S + 2}`);
+  const scale = Math.min(1, 760 / (C * S + 2));
+  svg.setAttribute('width', (C * S + 2) * scale);
+  svg.setAttribute('height', (R * S + 2) * scale);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++)
+    svgEl('rect', {x: c * S, y: r * S, width: S, height: S, fill: '#fff', stroke: '#e0e0e0', 'data-r': r, 'data-c': c}, svg);
+  svgEl('rect', {x: 0, y: 0, width: C * S, height: R * S, fill: 'none', stroke: '#1f1f1f', 'pointer-events': 'none'}, svg);
+  if (loop) {  // walk the loop from its first cell
+    const start = loop.findIndex(row => /[^.]/.test(row)), pts = [];
+    let r = start, c = loop[start].search(/[^.]/), from = null;
+    do {
+      pts.push(`${c * S + S / 2},${r * S + S / 2}`);
+      const d = [...CH[loop[r][c]]].find(x => x !== from);
+      r += D[d][0]; c += D[d][1]; from = OPP[d];
+    } while (pts.length <= R * C && !(r === start && c === loop[start].search(/[^.]/)));
+    svgEl('polygon', {points: pts.join(' '), fill: 'none', stroke: '#1a5fb4', 'stroke-width': 3, 'stroke-linejoin': 'round', 'pointer-events': 'none'}, svg);
+  }
+  puz.forEach((row, r) => [...row].forEach((p, c) => p !== '.' && svgEl('circle',
+    {cx: c * S + S / 2, cy: r * S + S / 2, r: S * 0.3, fill: p === 'B' ? '#1f1f1f' : '#fff', stroke: '#1f1f1f', 'stroke-width': 1.5, 'pointer-events': 'none'}, svg)));
+}
+
+function reset(rows, note, p = 0) { puz = rows; planted = p; loop = null; draw(); status(note || ''); }
+function size() { return [Math.min(50, Math.max(6, +$('R').value || 10)), Math.min(50, Math.max(6, +$('C').value || 10))]; }
+
+$('out').onclick = e => {
+  const r = e.target.dataset.r, c = e.target.dataset.c;
+  if (r === undefined) return;
+  const row = [...puz[r]];
+  row[c] = {'.': 'W', W: 'B', B: '.'}[row[c]];
+  puz[r] = row.join('');
+  reset(puz);
+};
+$('clear').onclick = () => { const [R, C] = size(); reset(Array(R).fill('.'.repeat(C))); };
+$('example').onclick = () => { reset(['......', '.W....', '....B.', '......', '.B....', '....W.'], 'The statement says the shortest loop here has 18 cells.'); };
+$('gen').onclick = () => { const [R, C] = size(); generate(R, C); reset(puz, `Generated around a planted loop of ${planted} cells. The solver may find a shorter one.`, planted); };
+
+$('go').onclick = async () => {
+  const pearls = puz.join('').replace(/\./g, '').length;
+  if (pearls < 2) return status('Place at least 2 pearls.', true);
+  status('Solving...');
+  try {
+    const r = await solve('q4', [puz.length, ...puz].join('\n') + '\n', {MASYU_T: String(+$('tl').value || 1)});
+    const out = r.out.trim().split('\n').map(s => s.trim());
+    let len;
+    try { len = check(out); } catch (e) { loop = null; draw(); return status(`No valid loop: ${e.message}. The puzzle may have no solution.`, true); }
+    loop = out; draw();
+    status(`Valid loop of ${len} cells through ${pearls} pearls. ${(r.ms / 1000).toFixed(2)} s.` + (planted ? ` Planted loop: ${planted} cells.` : ''));
+  } catch (e) { status('Solver error: ' + e.message, true); }
+};
+
+$('example').onclick();
+$('go').onclick();
+</script>
+</body>
+</html>

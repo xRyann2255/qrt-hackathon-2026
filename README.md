@@ -8,6 +8,9 @@ I wrote very little of the code by hand. I ran a fleet of AI coding agents, one 
 two hours deciding what they worked on, where the compute went, what got merged and what got saved. This repo has
 the final submitted code for all five questions and an account of how it was done.
 
+The problem statements are in [QUESTIONS.md](QUESTIONS.md). Interactive versions of Q1, Q2, Q4 and Q5, which run the
+solvers in the browser on your own input, are in [docs/](docs).
+
 ## Result
 
 | Place | Team | Score |
@@ -250,10 +253,12 @@ submission is a 3.5 KB table keyed by a hash of the input.
 ## Repo
 
 ```
+QUESTIONS.md         the five problem statements, with diagrams redrawn from the examples (questions/img)
 solutions/q1 .. q5   the final submitted code, unchanged, each with a README (approach, build, run)
 tools/set-best       write a score file only if the new score is higher (flock + atomic rename)
 tools/capture.py     recover inputs that a submission echoed to stderr
 LINKEDIN.md          draft posts
+docs/                interactive pages for Q1, Q2, Q4, Q5: the solvers in WebAssembly and Pyodide (docs/build.sh)
 ```
 
 The captured hidden inputs are not included: they are QRT's test data. The tables in the solutions only match those

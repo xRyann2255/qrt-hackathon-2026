@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q5 Document Lego</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .pieces { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pieces pre, .page { border: 1px solid var(--line); background: var(--soft); padding: 2px 4px; }
+  .page { overflow-x: auto; margin: 0.5rem 0; }
+  .bad { color: var(--accent); text-decoration: underline; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">QRT hackathon demos</a> / Q5</nav>
+<h1>Q5. Bonus: Document Lego</h1>
+<p>A few pages of English text, each wrapped to its own width and height, were cut into rectangles, shuffled and mixed with
+pieces of another document. Put the pages back together. The score is the share of the pages' characters placed correctly.
+<a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q5-bonus-document-lego">Full question</a></p>
+<p class="note">The 200/200 submission cannot run here: it was a lookup table of the one hidden test, whose six pages AI agents
+read as English and wrote out row by row, each row checked by an exact tiling search. This page runs the team's general
+solver instead (greedy seam matching with an English word model, pure Python in Pyodide). It scored 46% on the statement
+sample and 20 to 26% on synthetic cases, so expect partial pages.</p>
+
+<label for="text">Text: each paragraph becomes one page (up to 3)</label>
+<textarea id="text" rows="8" spellcheck="false">The keeper of the northern lighthouse rose before sunrise and carried a kettle to the small kitchen. Beyond the window, pale waves moved across the harbour. A fishing boat returned with its lamps still burning. She checked the weather instruments, wrote a careful entry in the log, and climbed the narrow stairs. The lamp had turned throughout the night without interruption.
+
+A public library occupies the old railway station in our town. The ticket office is now a reading room, and the waiting hall contains shelves of novels and travel books. Children gather beside the clock each Saturday to hear stories. Older visitors often remember the steam engines and the smell of coal smoke.</textarea>
+<div class="row">
+  <label>Seed <input id="seed" type="number" value="1"></label>
+  <label>Extra pieces <input id="extras" type="number" value="2" min="0" max="20"></label>
+  <button class="go" id="go">Cut and reassemble</button>
+</div>
+<div id="status"></div>
+<div id="result" hidden>
+  <h2>Scrambled pieces</h2>
+  <div id="pieces" class="pieces"></div>
+  <h2>Reassembled</h2>
+  <p class="note">Underlined characters are not where they were on the original page. Each output page is matched to at most one original page.</p>
+  <div id="out"></div>
+  <h2>Original pages</h2>
+  <div id="orig"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const worker = new Worker('py.js');
+let t0;
+
+function pre(rows, ok, cls) {
+  const p = document.createElement('pre');
+  p.className = cls || '';
+  rows.forEach((row, r) => {
+    for (let c = 0; c < row.length;) {  // group runs of correct and wrong characters
+      const good = !ok || ok[r][c] === '1';
+      let e = c;
+      while (e < row.length && (!ok || ok[r][e] === '1') === good) e++;
+      const s = document.createElement('span');
+      if (!good) s.className = 'bad';
+      s.textContent = row.slice(c, e);
+      p.appendChild(s);
+      c = e;
+    }
+    if (r + 1 < rows.length) p.append('\n');
+  });
+  return p;
+}
+
+worker.onmessage = ({data: d}) => {
+  $('go').disabled = false;
+  if (d.error) { $('status').textContent = 'Error: ' + d.error; return; }
+  const genuine = d.pieces.length - d.extras.length, full = d.out.filter(p => p.matched);
+  $('status').textContent = `${d.pieces.length} pieces: ${genuine} from ${d.pages.length} pages and ${d.extras.length} extra. ` +
+    `The solver formed ${d.out.length} groups in ${d.seconds.toFixed(1)} s (${((performance.now() - t0) / 1000).toFixed(1)} s with loading). ` +
+    `Score: ${d.score.toFixed(1)}% of characters in the right place.`;
+  $('pieces').replaceChildren(...d.pieces.map(s => pre(s.replace(/_/g, ' ').split('|'))));
+  const rest = d.out.filter(p => !p.matched), box = document.createElement('div');
+  box.className = 'pieces';
+  box.replaceChildren(...rest.map(p => pre(p.rows, p.ok)));
+  $('out').replaceChildren(...full.map(p => pre(p.rows, p.ok, 'page')),
+    Object.assign(document.createElement('p'), {className: 'note', textContent: `${rest.length} unmatched groups:`}), box);
+  $('orig').replaceChildren(...d.pages.map(rows => pre(rows, null, 'page')));
+  $('result').hidden = false;
+};
+
+worker.onerror = e => { $('go').disabled = false; $('status').textContent = 'Could not load Python from the CDN: ' + e.message; };
+
+$('go').onclick = () => {
+  $('go').disabled = true;
+  t0 = performance.now();
+  $('status').textContent = 'Running. The first run downloads Python (about 12 MB) from the jsDelivr CDN.';
+  worker.postMessage({text: $('text').value, seed: +$('seed').value || 0, extras: Math.min(20, Math.max(0, +$('extras').value || 0))});
+};
+</script>
+</body>
+</html>
