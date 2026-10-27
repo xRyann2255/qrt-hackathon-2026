@@ -3,39 +3,70 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Q2 Word search generation</title>
+<title>Q2 Word search generation: QRT x Imperial hackathon demo</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 <style>
-  #words button { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; padding: 0.15rem 0.45rem; }
-  #words button.on { border-color: #1a5fb4; color: #1a5fb4; }
+  .words-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 0.75rem; }
+  .letter { font-family: var(--mono); font-weight: 500; fill: var(--ink); transition: opacity 0.12s; }
+  .shared1 { fill: color-mix(in oklab, var(--ink) 6%, var(--bg)); }
+  .shared2 { fill: color-mix(in oklab, var(--ink) 12%, var(--bg)); }
+  .plain { fill: var(--bg); }
+  .capsule { stroke: color-mix(in oklab, var(--accent) 30%, transparent); stroke-linecap: round; fill: none; }
+  .wrap-mark { fill: var(--accent); }
+  .first { fill: var(--accent); font-weight: 700; }
+  #words { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center; margin-top: 1rem; }
+  #words button { font: 0.8125rem var(--mono); min-height: 1.9rem; padding: 0 0.55rem; }
+  #words button[aria-pressed=true] { border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 </style>
 </head>
 <body>
-<nav><a href="index.html">QRT hackathon demos</a> / Q2</nav>
-<h1>Q2. Word search generation</h1>
-<p>Build the smallest N &times; N letter grid that contains every required word in a straight line (8 directions) and no
-forbidden word anywhere. The grid wraps at the edges. Each test scores by density, the letters of the required words over N&sup2;:
-full marks at 1.7. <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q2-word-search-generation">Full question</a></p>
-<p class="note">Runs the submitted C++ annealer (descending N), compiled to WebAssembly. The submission also held 18 grids
-computed offline on lab machines for the hidden tests; that table is removed here. The live annealer alone earned 62%
-of the question's points; the table took it to 77%.</p>
+<header class="site">
+  <a class="home" href="index.html">Code. Compute. Compete 2026</a>
+  <nav><a href="q1.html">Packing</a><a href="q2.html" aria-current="page">Word search</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
+</header>
+<main class="demo">
+  <section class="intro">
+    <h1>Q2. Word search generation</h1>
+    <p>Build the smallest N &times; N letter grid that contains every required word in a straight line (8 directions)
+    and no forbidden word anywhere. The grid wraps at the edges. A test scores by density, the letters of the required
+    words over N&sup2;, with full marks at 1.7.
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q2-word-search-generation">Full question</a></p>
+  </section>
 
-<div class="row" style="align-items: start">
-  <div style="flex: 2 1 16rem"><label for="req">Required words</label>
-    <textarea id="req" rows="5"></textarea></div>
-  <div style="flex: 1 1 10rem"><label for="forb">Forbidden words</label>
-    <textarea id="forb" rows="5"></textarea></div>
-</div>
-<div class="row">
-  <button data-ex="0">Statement example</button>
-  <button data-ex="1">Fruit</button>
-  <button data-ex="2">Fruit, with forbidden words</button>
-  <label>Time budget (s) <input id="tl" type="number" value="1.7" min="0.1" max="30" step="0.1"></label>
-  <button class="go" id="go">Build grid</button>
-</div>
-<div id="status"></div>
-<svg id="out" width="0" height="0"></svg>
-<div id="words" class="row"></div>
+  <section class="controls">
+    <div class="words-grid">
+      <div><label for="req">Required words</label><textarea id="req" rows="6" spellcheck="false"></textarea></div>
+      <div><label for="forb">Forbidden words</label><textarea id="forb" rows="6" spellcheck="false"></textarea></div>
+    </div>
+    <span class="label" style="margin-top: 1rem">Examples</span>
+    <div class="examples">
+      <button data-ex="0">Statement</button>
+      <button data-ex="1">Fruit</button>
+      <button data-ex="2">Fruit, with forbidden words</button>
+    </div>
+    <div class="run">
+      <label>Time budget (s) <input id="tl" type="number" value="1.7" min="0.1" max="30" step="0.1"></label>
+      <button class="primary" id="go">Build grid</button>
+    </div>
+  </section>
+
+  <dl class="metrics" id="metrics"></dl>
+
+  <p class="note">Runs the submitted C++ annealer (descending N), compiled to WebAssembly. The submission also held 18
+  grids computed offline on lab machines for the hidden tests; that table is removed here. The live annealer alone
+  earned 62% of the question's points; the table took it to 77%.</p>
+
+  <figure class="stage" id="stage" data-state="busy">
+    <div class="stagebar"><p id="status" role="status">Loading the solver</p><button id="skip" hidden>Skip animation</button></div>
+    <svg id="out" width="0" height="0" role="img" aria-label="The letter grid"></svg>
+    <div id="words"></div>
+    <p class="legend">Tap a word to trace it. Arrows mark where it leaves one edge and comes back on the opposite edge.
+    Shaded cells are shared by two or more words.</p>
+  </figure>
+</main>
+<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
 
 <script src="app.js"></script>
 <script>
@@ -55,58 +86,86 @@ function find(g, w) {  // first placement of w on the torus: [row, col, dir] or 
   return null;
 }
 
-let grid = [], places = {};
-function draw(sel) {
-  const N = grid.length, S = 28, svg = $('out');
+const S = 30, M = 16;  // cell size and the margin that holds the wrap arrows, in SVG units
+let grid = [], places = {}, req = [], letters = [], trace;
+const cells = w => { const [r, c, d] = places[w]; return [...w].map((_, k) => [r + k * DR[d], c + k * DC[d]]); };  // unwrapped
+
+function draw() {
+  const N = grid.length, svg = $('out');
   svg.replaceChildren();
-  svg.setAttribute('viewBox', `-2 -2 ${N * S + 4} ${N * S + 4}`);
-  svg.setAttribute('width', Math.min(760, N * S + 4));
-  svg.setAttribute('height', Math.min(760, N * S + 4));
+  svg.setAttribute('viewBox', `${-M} ${-M} ${N * S + 2 * M} ${N * S + 2 * M}`);
+  const room = Math.max(240, $('stage').clientWidth - 40), k = Math.min(1.25, room / (N * S + 2 * M), 640 / (N * S + 2 * M));
+  svg.setAttribute('width', (N * S + 2 * M) * k);
+  svg.setAttribute('height', (N * S + 2 * M) * k);
   const uses = grid.map(row => row.map(() => 0));
-  const cells = (w, [r, c, d]) => [...w].map((_, k) => [r + k * DR[d], c + k * DC[d]]);  // unwrapped
-  for (const w in places) for (const [r, c] of cells(w, places[w])) uses[mod(r, N)][mod(c, N)]++;
-  const on = new Set(sel ? cells(sel, places[sel]).map(([r, c]) => mod(r, N) * N + mod(c, N)) : []);
-  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
-    const shade = on.has(r * N + c) ? '#cfdff3' : ['#fff', '#f4f4f4', '#e8e8e8', '#dcdcdc'][Math.min(3, uses[r][c])];
-    svgEl('rect', {x: c * S, y: r * S, width: S, height: S, fill: shade, stroke: '#d4d4d4'}, svg);
-    svgEl('text', {x: c * S + S / 2, y: r * S + S / 2, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-                   'font-size': 15, 'font-family': 'ui-monospace, Menlo, monospace', fill: '#1f1f1f'}, svg).textContent = grid[r][c];
-  }
-  svgEl('rect', {x: 0, y: 0, width: N * S, height: N * S, fill: 'none', stroke: '#1f1f1f'}, svg);
-  if (!sel) return;
-  // Trace the word through cell centres; where it wraps, draw a stub out of one edge and back in from the opposite edge.
-  const u = cells(sel, places[sel]), d = places[sel][2], pt = (r, c) => [c * S + S / 2, r * S + S / 2];
-  const line = (a, b) => svgEl('line', {x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#1a5fb4', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0.8}, svg);
-  for (let k = 0; k + 1 < u.length; k++) {
-    const [r0, c0] = u[k], [r1, c1] = u[k + 1];
-    const a = pt(mod(r0, N), mod(c0, N)), b = pt(mod(r1, N), mod(c1, N));
-    if (Math.floor(r0 / N) === Math.floor(r1 / N) && Math.floor(c0 / N) === Math.floor(c1 / N)) line(a, b);
-    else {
-      line(a, [a[0] + DC[d] * S / 2, a[1] + DR[d] * S / 2]);
-      line([b[0] - DC[d] * S / 2, b[1] - DR[d] * S / 2], b);
-    }
-  }
-  const [x, y] = pt(mod(u[0][0], N), mod(u[0][1], N));
-  svgEl('circle', {cx: x, cy: y, r: S / 2 - 2, fill: 'none', stroke: '#1a5fb4', 'stroke-width': 2}, svg);
+  for (const w of req) for (const [r, c] of cells(w)) uses[mod(r, N)][mod(c, N)]++;
+  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++)
+    svgEl('rect', {x: c * S, y: r * S, width: S, height: S, class: uses[r][c] >= 3 ? 'shared2' : uses[r][c] === 2 ? 'shared1' : 'plain'}, svg);
+  svgEl('clipPath', {id: 'board'}, svgEl('defs', {}, svg)).appendChild(svgEl('rect', {x: 0, y: 0, width: N * S, height: N * S}));
+  trace = svgEl('g', {}, svg);
+  const d = [];
+  for (let i = 1; i < N; i++) d.push(`M0 ${i * S}H${N * S}M${i * S} 0V${N * S}`);
+  svgEl('path', {class: 'grid-line', d: d.join('')}, svg);
+  letters = grid.map((row, r) => row.map((ch, c) => {
+    const t = svgEl('text', {x: c * S + S / 2, y: r * S + S / 2 + 1, class: 'letter', 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': 16}, svg);
+    t.textContent = ch;
+    return t;
+  }));
+  svgEl('rect', {class: 'frame', x: 0, y: 0, width: N * S, height: N * S}, svg);
+  // Letters appear word by word, in the order the words were given; letters no word uses come last
+  const replay = () => {
+    letters.flat().forEach(t => t.classList.add('pending'));
+    select(null);
+    play(req.length + 1, i => {
+      if (i < req.length) for (const [r, c] of cells(req[i])) letters[mod(r, N)][mod(c, N)].classList.remove('pending');
+      else { letters.flat().forEach(t => t.classList.remove('pending')); if (!trace.childNodes.length) select(req.find(w => cells(w).some(p => p.some(v => v < 0 || v >= N))) || req[0]); }
+    }, replay, Math.min(2500, 120 * req.length));
+  };
+  replay();
 }
 
-function showWords(req) {
-  $('words').replaceChildren(...req.map(w => {
-    const b = document.createElement('button');
-    b.textContent = w;
-    b.onmouseenter = b.onclick = () => { document.querySelectorAll('#words button').forEach(x => x.classList.toggle('on', x === b)); draw(w); };
-    return b;
-  }));
+function select(w) {
+  document.querySelectorAll('#words button').forEach(b => b.setAttribute('aria-pressed', b.textContent === w));
+  letters.flat().forEach(t => t.classList.remove('first'));
+  trace.replaceChildren();
+  if (!w) return;
+  const N = grid.length, u = cells(w), d = places[w][2], dx = DC[d], dy = DR[d];
+  const tile = ([r, c]) => `${Math.floor(r / N)},${Math.floor(c / N)}`;
+  const at = ([r, c]) => [mod(c, N) * S + S / 2, mod(r, N) * S + S / 2];
+  const runs = [];  // pieces of the word between wraps
+  for (const p of u) (runs.length && tile(runs.at(-1).at(-1)) === tile(p)) ? runs.at(-1).push(p) : runs.push([p]);
+  const clip = svgEl('g', {'clip-path': 'url(#board)'}, trace);
+  runs.forEach((run, i) => {
+    let [x0, y0] = at(run[0]), [x1, y1] = at(run.at(-1));
+    if (i > 0) { x0 -= dx * S; y0 -= dy * S; }                  // comes in from the edge
+    if (i < runs.length - 1) { x1 += dx * S; y1 += dy * S; }    // goes out through the edge
+    svgEl('line', {class: 'capsule', x1: x0, y1: y0, x2: x1, y2: y1, 'stroke-width': S * 0.76}, clip);
+    if (i < runs.length - 1) {  // arrow out where this piece leaves, arrow in where the next one enters
+      const [ex, ey] = at(run.at(-1)), [nx, ny] = at(runs[i + 1][0]);
+      arrow(ex + dx * S / 2, ey + dy * S / 2, dx, dy, N);
+      arrow(nx - dx * S / 2, ny - dy * S / 2, dx, dy, N);
+    }
+  });
+  const [r0, c0] = u[0];
+  letters[mod(r0, N)][mod(c0, N)].classList.add('first');
+}
+
+function arrow(x, y, dx, dy, N) {  // a small triangle just outside the frame, pointing along the word
+  const len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+  const cx = Math.min(N * S + M * 0.55, Math.max(-M * 0.55, x + ux * 8)), cy = Math.min(N * S + M * 0.55, Math.max(-M * 0.55, y + uy * 8));
+  const tip = [cx + ux * 5, cy + uy * 5], l = [cx - ux * 4 - uy * 4.5, cy - uy * 4 + ux * 4.5], r = [cx - ux * 4 + uy * 4.5, cy - uy * 4 - ux * 4.5];
+  svgEl('path', {class: 'wrap-mark', d: `M${tip}L${l}L${r}Z`}, trace);
 }
 
 async function run() {
-  const req = [...new Set(words($('req').value))], forb = [...new Set(words($('forb').value))];
+  req = [...new Set(words($('req').value))];
+  const forb = [...new Set(words($('forb').value))];
   if (!req.length || req.length > 200 || forb.length > 200 || [...req, ...forb].some(w => w.length > 40))
-    return status('Enter 1 to 200 required words and up to 200 forbidden words, letters only, up to 40 letters each.', true);
+    return status('Enter 1 to 200 required words and up to 200 forbidden words, letters only, up to 40 letters each.', 'error');
   const rev = w => [...w].reverse().join('');
   const clash = forb.find(f => req.some(w => w.includes(f) || rev(w).includes(f)));
-  if (clash) return status(`No valid grid exists: the forbidden word ${clash} is inside a required word.`, true);
-  status('Annealing...');
+  if (clash) return status(`No valid grid exists: the forbidden word ${clash} is inside a required word.`, 'error');
+  status('Annealing', 'busy');
   try {
     const r = await solve('q2', [req.length, ...req, forb.length, ...forb].join('\n') + '\n', {TL: String(+$('tl').value || 1.7)});
     grid = r.out.trim().split('\n').map(l => l.trim().split(/\s+/));
@@ -115,14 +174,19 @@ async function run() {
     for (const w of req) places[w] = find(grid, w);
     const missing = req.filter(w => !places[w]), present = forb.filter(f => find(grid, f));
     if (grid.some(row => row.length !== N) || missing.length || present.length)
-      return status(`Invalid grid. Missing: ${missing.join(' ') || 'none'}. Forbidden present: ${present.join(' ') || 'none'}.`, true);
-    const S = req.reduce((a, w) => a + w.length, 0), dens = S / N / N;
-    status(`N = ${N}: ${S} letters in ${N * N} cells, density ${dens.toFixed(3)}, score ${(100 * Math.min(1, dens / 1.7)).toFixed(1)}% ` +
-           `of the test's points. All ${req.length} words found, no forbidden word. ${(r.ms / 1000).toFixed(2)} s. Point at a word to trace it.`);
-    showWords(req);
-    draw(req[0]);
-    document.querySelector('#words button').classList.add('on');
-  } catch (e) { status('Solver error: ' + e.message, true); }
+      return status(`The grid is invalid. Missing: ${missing.join(' ') || 'none'}. Forbidden words present: ${present.join(' ') || 'none'}.`, 'error');
+    const total = req.reduce((a, w) => a + w.length, 0), dens = total / N / N;
+    $('words').replaceChildren(...req.map(w => {
+      const b = document.createElement('button');
+      b.textContent = w;
+      b.onclick = b.onmouseenter = () => select(w);
+      return b;
+    }));
+    draw();
+    status(`All ${req.length} words fit in ${N} × ${N}${forb.length ? ', with no forbidden word' : ''}.`);
+    metrics([['Grid', `${N} × ${N}`], ['Words', req.length], ['Letters in words', total], ['Density', dens.toFixed(3)],
+             ['Score', `${(100 * Math.min(1, dens / 1.7)).toFixed(1)}% of the test`, true], ['Solve time', `${(r.ms / 1000).toFixed(2)} s`]]);
+  } catch (e) { status('The solver stopped: ' + e.message, 'error'); }
 }
 
 document.querySelectorAll('[data-ex]').forEach(b => b.onclick = () => {
@@ -130,6 +194,8 @@ document.querySelectorAll('[data-ex]').forEach(b => b.onclick = () => {
   run();
 });
 $('go').onclick = run;
+let width = innerWidth;
+addEventListener('resize', () => { if (innerWidth !== width && grid.length) { width = innerWidth; draw(); } });
 [$('req').value, $('forb').value] = EXAMPLES[1].map(s => s.split(' ').join('\n'));
 run();
 </script>

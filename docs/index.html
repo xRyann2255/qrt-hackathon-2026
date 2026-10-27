@@ -3,22 +3,85 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QRT x Imperial hackathon 2026: interactive solutions</title>
+<title>1st of 68 teams: QRT x Imperial Code. Compute. Compete 2026</title>
+<meta name="description" content="Team Mite, solo: 1st of 68 teams with 3987.89 of 4300 points. Interactive versions of the competition solvers.">
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
+<style>
+  .hero { padding: 1.5rem 0 2.5rem; border-bottom: 1px solid var(--rule); }
+  .hero .event { color: var(--muted); margin-bottom: 0.5rem; }
+  .hero h1 { font-size: clamp(2.5rem, 7vw, 4.5rem); line-height: 1; letter-spacing: -0.035em; margin: 0 0 1.25rem; }
+  .hero .lede { font-size: 1.1875rem; max-width: 40ch; }
+  .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.5rem; }
+  .scores { list-style: none; margin: 0; padding: 0; }
+  .scores li { display: grid; grid-template-columns: 2.5rem minmax(0, 15rem) minmax(0, 1fr) 7rem 7rem; gap: 0 1.25rem;
+               align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
+  .scores .q { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .scores .name { font-weight: 600; }
+  .scores .what { display: block; font-weight: 400; font-size: 0.875rem; color: var(--muted); margin-top: 0.15rem; }
+  .bar { height: 0.5rem; background: var(--rule); border-radius: 0.25rem; overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--accent); border-radius: 0.25rem; }
+  .pct { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pts { display: block; white-space: nowrap; font-weight: 400; font-size: 0.8125rem; color: var(--muted); }
+  .scores .go { text-align: right; font-size: 0.9375rem; }
+  .scores .go span { color: var(--muted); }
+  .scores li.total { border-bottom: 0; }
+  .scores li.total .name { font-weight: 650; }
+  .scores li.total .bar span { background: var(--ink); }
+  .how { margin-top: 1.25rem; }
+  @media (max-width: 760px) {
+    .scores li { grid-template-columns: 2rem minmax(0, 1fr) 6.5rem; grid-template-areas: "q name pct" ". bar bar" ". go go"; gap: 0.4rem 0.75rem; }
+    .scores .q { grid-area: q; align-self: start; } .scores .name { grid-area: name; } .scores .pct { grid-area: pct; align-self: start; }
+    .scores .bar { grid-area: bar; } .scores .go { grid-area: go; text-align: left; }
+    .scores .go:empty { display: none; }
+  }
+</style>
 </head>
 <body>
-<h1>QRT x Imperial "Code. Compute. Compete" 2026: interactive solutions</h1>
-<p>Team Mite, a solo team: 1st of 68 teams (about 240 participants) with 3987.89 of 4300 points, 26 October 2026. Problems by QRT.
-Each page below runs the solver from the competition in your browser on input you choose.</p>
-<ul class="pages">
-  <li><a href="q1.html">Q1. Square packing</a>: enter side lengths, see the packing, its area and its score.</li>
-  <li><a href="q2.html">Q2. Word search generation</a>: enter words, get the smallest wrapping grid the annealer finds.</li>
-  <li><a href="q4.html">Q4. Masyu</a>: place pearls or generate a puzzle, see the solver's loop.</li>
-  <li><a href="q5.html">Q5. Document Lego</a>: paste text, watch it get cut up, scrambled and reassembled.</li>
-</ul>
-<p class="note">Q3 was a black box with no picture to draw. The C++ solvers are the submitted code compiled to WebAssembly,
-with the tables of answers computed offline for the hidden tests removed; each page says how the code it runs relates to the
-submission. Statements: <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md">QUESTIONS.md</a>.
-Code and write-up: <a href="https://github.com/xRyann2255/qrt-hackathon-2026">the repository</a>.</p>
+<header class="site">
+  <a class="home" href="index.html">Code. Compute. Compete 2026</a>
+  <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
+</header>
+<main>
+  <section class="hero">
+    <p class="event">QRT x Imperial "Code. Compute. Compete", 26 October 2026</p>
+    <h1>1st of 68 teams</h1>
+    <p class="lede">Team Mite, a solo entry, scored 3987.89 of a possible 4300 points against about 240 participants,
+    with a fleet of AI coding agents working on four optimisation problems and a bonus in two hours.</p>
+    <p>The pages below run the competition solvers in your browser on input you choose.</p>
+    <div class="links">
+      <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Read the write-up</a>
+      <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md">Read the problem statements</a>
+      <a href="https://github.com/xRyann2255/qrt-hackathon-2026">Browse the code</a>
+    </div>
+  </section>
+
+  <h2>Score on each question</h2>
+  <ul class="scores">
+    <li><span class="q">Q1</span><span class="name">Square packing<span class="what">Pack squares into the smallest rectangle</span></span>
+      <span class="bar"><span style="width: 97.4%"></span></span><span class="pct">97.4%<span class="pts">973.68 / 1000</span></span>
+      <a class="go" href="q1.html">Open demo</a></li>
+    <li><span class="q">Q2</span><span class="name">Word search generation<span class="what">The smallest wrapping grid that holds every word</span></span>
+      <span class="bar"><span style="width: 77.2%"></span></span><span class="pct">77.2%<span class="pts">833.40 / 1080</span></span>
+      <a class="go" href="q2.html">Open demo</a></li>
+    <li><span class="q">Q3</span><span class="name">Black box<span class="what">Maximise the payoff of a hidden, noisy function</span></span>
+      <span class="bar"><span style="width: 100%"></span></span><span class="pct">100%<span class="pts">1020 / 1020</span></span>
+      <span class="go"><span>No demo</span></span></li>
+    <li><span class="q">Q4</span><span class="name">Masyu<span class="what">The shortest loop through every pearl</span></span>
+      <span class="bar"><span style="width: 96.1%"></span></span><span class="pct">96.1%<span class="pts">960.81 / 1000</span></span>
+      <a class="go" href="q4.html">Open demo</a></li>
+    <li><span class="q">Q5</span><span class="name">Bonus: Document Lego<span class="what">Reassemble shredded pages of text</span></span>
+      <span class="bar"><span style="width: 100%"></span></span><span class="pct">100%<span class="pts">200 / 200</span></span>
+      <a class="go" href="q5.html">Open demo</a></li>
+    <li class="total"><span class="q"></span><span class="name">Total</span>
+      <span class="bar"><span style="width: 92.7%"></span></span><span class="pct">92.7%<span class="pts">3987.89 / 4300</span></span>
+      <span class="go"></span></li>
+  </ul>
+  <p class="note how">Each question ran on hidden tests and paid for how close each answer came to the best possible one.
+  Mite was the only team with perfect scores on both Q3 and Q5, and had the highest or tied highest score on every
+  question. Q3 has no demo: it was a black box with nothing to draw.</p>
+</main>
+<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
 </body>
 </html>

@@ -3,62 +3,96 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Q5 Document Lego</title>
+<title>Q5 Document Lego: QRT x Imperial hackathon demo</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 <style>
-  .pieces { display: flex; flex-wrap: wrap; gap: 6px; }
-  .pieces pre, .page { border: 1px solid var(--line); background: var(--soft); padding: 2px 4px; }
-  .page { overflow-x: auto; margin: 0.5rem 0; }
-  .bad { color: var(--accent); text-decoration: underline; }
+  .panel + .panel { margin-top: 1.75rem; }
+  .panel h2 { font-size: 1rem; margin: 0 0 0.25rem; }
+  .panel .note { margin-bottom: 0.75rem; }
+  .pieces { display: flex; flex-wrap: wrap; gap: 5px; }
+  .piece, .page { font-family: var(--mono); line-height: 1.3; margin: 0; background: var(--bg); color: var(--ink); }
+  .piece { font-size: 11.5px; border: 1px solid var(--rule); border-radius: 3px; padding: 2px 4px; transition: opacity 0.2s; }
+  .piece.extra { border-style: dashed; border-color: var(--muted); }
+  .piece.used { opacity: 0.18; }
+  .page { width: fit-content; max-width: 100%; font-size: clamp(9.5px, 2.4vw, 12.5px); border: 1px solid var(--rule); border-radius: 4px; padding: 0.75rem 0.9rem;
+          overflow-x: auto; margin-bottom: 0.75rem; }
+  .bad { text-decoration: underline wavy var(--err); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .hl { background: color-mix(in oklab, var(--accent) 28%, transparent); }
+  .piece.hl { border-color: var(--accent); }
+  .page span.pending { visibility: hidden; }
+  details summary { cursor: pointer; color: var(--accent); margin-top: 1.5rem; }
+  details .page { margin-top: 0.75rem; }
+  .stage[data-state=idle] .panel, .stage[data-state=busy] .panel, .stage[data-state=idle] details { display: none; }
 </style>
 </head>
 <body>
-<nav><a href="index.html">QRT hackathon demos</a> / Q5</nav>
-<h1>Q5. Bonus: Document Lego</h1>
-<p>A few pages of English text, each wrapped to its own width and height, were cut into rectangles, shuffled and mixed with
-pieces of another document. Put the pages back together. The score is the share of the pages' characters placed correctly.
-<a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q5-bonus-document-lego">Full question</a></p>
-<p class="note">The full marks submission cannot run here: it was a lookup table of the one hidden test, whose six pages AI agents
-read as English and wrote out row by row, each row checked by an exact tiling search. This page runs the team's general
-solver instead (greedy seam matching with an English word model, pure Python in Pyodide). It scored 46% on the statement
-sample and 20 to 26% on synthetic cases, so expect partial pages.</p>
+<header class="site">
+  <a class="home" href="index.html">Code. Compute. Compete 2026</a>
+  <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q4.html">Masyu</a><a href="q5.html" aria-current="page">Document Lego</a>
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
+</header>
+<main class="demo">
+  <section class="intro">
+    <h1>Q5. Bonus: Document Lego</h1>
+    <p>A few pages of English text, each wrapped to its own width and height, were cut into rectangles, shuffled and mixed
+    with pieces of another document. Put the pages back together. The score is the share of the pages' characters placed
+    correctly. <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q5-bonus-document-lego">Full question</a></p>
+  </section>
 
-<label for="text">Text: each paragraph becomes one page (up to 3)</label>
-<textarea id="text" rows="8" spellcheck="false">The keeper of the northern lighthouse rose before sunrise and carried a kettle to the small kitchen. Beyond the window, pale waves moved across the harbour. A fishing boat returned with its lamps still burning. She checked the weather instruments, wrote a careful entry in the log, and climbed the narrow stairs. The lamp had turned throughout the night without interruption.
+  <section class="controls">
+    <div class="field"><label for="text">Text: each paragraph becomes one page, up to 3</label>
+    <textarea id="text" rows="8" spellcheck="false">The keeper of the northern lighthouse rose before sunrise and carried a kettle to the small kitchen. Beyond the window, pale waves moved across the harbour. A fishing boat returned with its lamps still burning. She checked the weather instruments, wrote a careful entry in the log, and climbed the narrow stairs. The lamp had turned throughout the night without interruption.
 
-A public library occupies the old railway station in our town. The ticket office is now a reading room, and the waiting hall contains shelves of novels and travel books. Children gather beside the clock each Saturday to hear stories. Older visitors often remember the steam engines and the smell of coal smoke.</textarea>
-<div class="row">
-  <label>Seed <input id="seed" type="number" value="1"></label>
-  <label>Extra pieces <input id="extras" type="number" value="2" min="0" max="20"></label>
-  <button class="go" id="go">Cut and reassemble</button>
-</div>
-<div id="status"></div>
-<div id="result" hidden>
-  <h2>Scrambled pieces</h2>
-  <div id="pieces" class="pieces"></div>
-  <h2>Reassembled</h2>
-  <p class="note">Underlined characters are not where they were on the original page. Each output page is matched to at most one original page.</p>
-  <div id="out"></div>
-  <h2>Original pages</h2>
-  <div id="orig"></div>
-</div>
+A public library occupies the old railway station in our town. The ticket office is now a reading room, and the waiting hall contains shelves of novels and travel books. Children gather beside the clock each Saturday to hear stories. Older visitors often remember the steam engines and the smell of coal smoke.</textarea></div>
+    <div class="run">
+      <label>Seed <input id="seed" type="number" value="1"></label>
+      <label>Extra pieces <input id="extras" type="number" value="2" min="0" max="20"></label>
+      <button class="primary" id="go">Cut and reassemble</button>
+    </div>
+  </section>
 
+  <dl class="metrics" id="metrics"></dl>
+
+  <p class="note">The full marks submission cannot run here: it was a lookup table of the one hidden test, whose six pages
+  AI agents read as English and wrote out row by row, each row checked by an exact tiling search. This page runs the
+  team's general solver instead (greedy seam matching with an English word model, pure Python in Pyodide). It scored 46%
+  on the statement sample and 20 to 26% on synthetic cases, so expect partial pages.</p>
+
+  <figure class="stage" id="stage" data-state="idle">
+    <div class="stagebar"><p id="status" role="status">Press Cut and reassemble to cut your text into pieces and let the
+    solver put them back. The first run downloads Python, about 12 MB.</p><button id="skip" hidden>Skip animation</button></div>
+    <section class="panel">
+      <h2>Before: the scrambled pieces</h2>
+      <p class="note">Dashed pieces come from another document. Point at a piece to find it in the result.</p>
+      <div id="pieces" class="pieces"></div>
+    </section>
+    <section class="panel">
+      <h2>After: reassembled by the solver</h2>
+      <p class="note">Wavy underlines mark characters that are not where they were on the original page.</p>
+      <div id="out"></div>
+    </section>
+    <details><summary>Show the original pages</summary><div id="orig"></div></details>
+  </figure>
+</main>
+<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
+
+<script src="app.js"></script>
 <script>
-const $ = id => document.getElementById(id);
-const worker = new Worker('py.js');
-let t0;
+const py = new Worker('py.js');
+let t0, lit = [];
 
-function pre(rows, ok, cls) {
-  const p = document.createElement('pre');
-  p.className = cls || '';
+const el = (tag, cls, text) => Object.assign(document.createElement(tag), {className: cls || '', textContent: text || ''});
+
+function page(rows, ok, src) {  // a pre with one span per run of characters from the same piece and correctness
+  const p = el('pre', 'page');
   rows.forEach((row, r) => {
-    for (let c = 0; c < row.length;) {  // group runs of correct and wrong characters
-      const good = !ok || ok[r][c] === '1';
+    for (let c = 0; c < row.length;) {
+      const key = x => `${src ? src[r][x] : ''}/${ok ? ok[r][x] : ''}`;
       let e = c;
-      while (e < row.length && (!ok || ok[r][e] === '1') === good) e++;
-      const s = document.createElement('span');
-      if (!good) s.className = 'bad';
-      s.textContent = row.slice(c, e);
+      while (e < row.length && key(e) === key(c)) e++;
+      const s = el('span', ok && ok[r][c] === '0' ? 'bad' : '', row.slice(c, e));
+      if (src && src[r][c] >= 0) s.dataset.p = src[r][c];
       p.appendChild(s);
       c = e;
     }
@@ -67,30 +101,56 @@ function pre(rows, ok, cls) {
   return p;
 }
 
-worker.onmessage = ({data: d}) => {
+function highlight(p) {
+  lit.forEach(e => e.classList.remove('hl'));
+  lit = p === undefined ? [] : [...document.querySelectorAll(`[data-p="${p}"]`)];
+  lit.forEach(e => e.classList.add('hl'));
+}
+$('stage').onpointerover = e => highlight(e.target.closest?.('[data-p]')?.dataset.p);
+$('stage').onpointerleave = () => highlight();
+
+py.onmessage = ({data: d}) => {
   $('go').disabled = false;
-  if (d.error) { $('status').textContent = 'Error: ' + d.error; return; }
-  const genuine = d.pieces.length - d.extras.length, full = d.out.filter(p => p.matched);
-  $('status').textContent = `${d.pieces.length} pieces: ${genuine} from ${d.pages.length} pages and ${d.extras.length} extra. ` +
-    `The solver formed ${d.out.length} groups in ${d.seconds.toFixed(1)} s (${((performance.now() - t0) / 1000).toFixed(1)} s with loading). ` +
-    `Score: ${d.score.toFixed(1)}% of characters in the right place.`;
-  $('pieces').replaceChildren(...d.pieces.map(s => pre(s.replace(/_/g, ' ').split('|'))));
-  const rest = d.out.filter(p => !p.matched), box = document.createElement('div');
-  box.className = 'pieces';
-  box.replaceChildren(...rest.map(p => pre(p.rows, p.ok)));
-  $('out').replaceChildren(...full.map(p => pre(p.rows, p.ok, 'page')),
-    Object.assign(document.createElement('p'), {className: 'note', textContent: `${rest.length} unmatched groups:`}), box);
-  $('orig').replaceChildren(...d.pages.map(rows => pre(rows, null, 'page')));
-  $('result').hidden = false;
+  if (d.error) return status('The solver stopped: ' + d.error, 'error');
+  const extras = new Set(d.extras), matched = d.out.filter(p => p.matched), rest = d.out.filter(p => !p.matched);
+  const tiles = d.pieces.map((s, i) => {
+    const t = el('pre', 'piece' + (extras.has(i) ? ' extra' : ''), s.replace(/_/g, ' ').split('|').join('\n'));
+    t.dataset.p = i;
+    return t;
+  });
+  $('pieces').replaceChildren(...tiles);
+  const box = el('div', 'pieces');
+  box.replaceChildren(...rest.map(p => page(p.rows, p.ok, p.src)));
+  $('out').replaceChildren(...matched.map(p => page(p.rows, p.ok, p.src)),
+    ...(rest.length ? [el('p', 'note', `${rest.length} groups were not matched to any page:`), box] : []));
+  $('orig').replaceChildren(...d.pages.map(rows => page(rows)));
+  status(`Reassembled ${d.pieces.length} pieces into ${d.out.length} groups.`);
+  metrics([['Pieces', `${d.pieces.length - d.extras.length} + ${d.extras.length} extra`], ['Original pages', d.pages.length],
+           ['Groups formed', d.out.length], ['Score', `${d.score.toFixed(1)}% of characters`, true],
+           ['Solve time', `${d.seconds.toFixed(1)} s`], ['With Python loading', `${((performance.now() - t0) / 1000).toFixed(1)} s`]]);
+  // Pieces land in the result in reading order; their tiles above fade as they go
+  const spans = [...$('out').querySelectorAll('span[data-p]')], order = [...new Set(spans.map(s => +s.dataset.p))];
+  const byPiece = {};
+  spans.forEach(s => (byPiece[s.dataset.p] ||= []).push(s));
+  const replay = () => {
+    spans.forEach(s => s.classList.add('pending'));
+    tiles.forEach(t => t.classList.remove('used'));
+    play(order.length + 1, i => {
+      if (i === order.length) return tiles.forEach(t => t.classList.remove('used'));
+      byPiece[order[i]].forEach(s => s.classList.remove('pending'));
+      tiles[order[i]].classList.add('used');
+    }, replay, 2500);
+  };
+  replay();
 };
 
-worker.onerror = e => { $('go').disabled = false; $('status').textContent = 'Could not load Python from the CDN: ' + e.message; };
+py.onerror = e => { $('go').disabled = false; status('Python could not load from the jsDelivr CDN: ' + e.message, 'error'); };
 
 $('go').onclick = () => {
   $('go').disabled = true;
   t0 = performance.now();
-  $('status').textContent = 'Running. The first run downloads Python (about 12 MB) from the jsDelivr CDN.';
-  worker.postMessage({text: $('text').value, seed: +$('seed').value || 0, extras: Math.min(20, Math.max(0, +$('extras').value || 0))});
+  status('Cutting and reassembling. The first run also downloads Python, about 12 MB.', 'busy');
+  py.postMessage({text: $('text').value, seed: +$('seed').value || 0, extras: Math.min(20, Math.max(0, +$('extras').value || 0))});
 };
 </script>
 </body>

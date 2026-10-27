@@ -3,30 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Q1 Square packing</title>
+<title>Q1 Square packing: QRT x Imperial hackathon demo</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
+<style>
+  .sq rect { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .sq { transition: opacity 0.15s; }
+  .hatch line { stroke: var(--muted); stroke-opacity: 0.5; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .waste { fill: url(#hatch); }
+  .side { font-variant-numeric: tabular-nums; }
+</style>
 </head>
 <body>
-<nav><a href="index.html">QRT hackathon demos</a> / Q1</nav>
-<h1>Q1. Square packing</h1>
-<p>Place squares with integer sides on a grid, without overlaps, so the bounding rectangle has the smallest area.
-Each test scores 10 &times; (L/A)<sup>20</sup>, where A is the area and L a lower bound from the total area and the largest side.
-<a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q1-square-packing">Full question</a></p>
-<p class="note">Runs the submitted C++ live solver (skyline search with iterative deepening), compiled to WebAssembly.
-The submission also held a table of 102 packings computed offline for the hidden tests; that table is removed here.
-The live solver alone earned 68% of the question's points in the competition; the table took it to 97%.</p>
+<header class="site">
+  <a class="home" href="index.html">Code. Compute. Compete 2026</a>
+  <nav><a href="q1.html" aria-current="page">Packing</a><a href="q2.html">Word search</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
+</header>
+<main class="demo">
+  <section class="intro">
+    <h1>Q1. Square packing</h1>
+    <p>Place squares with integer sides on a grid, without overlaps, so the bounding rectangle has the smallest area A.
+    Each test scores 10 &times; (L/A)<sup>20</sup>, where L is a lower bound from the total area and the largest side.
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q1-square-packing">Full question</a></p>
+  </section>
 
-<label for="sides">Side lengths</label>
-<textarea id="sides" rows="2">3 1 4 1 5</textarea>
-<div class="row">
-  <button data-ex="3 1 4 1 5">Sample</button>
-  <button data-ex="1 2 3 4">Statement example</button>
-  <button id="random">Random</button>
-  <label>Time budget (s) <input id="tl" type="number" value="1.7" min="0.1" max="30" step="0.1"></label>
-  <button class="go" id="go">Pack</button>
-</div>
-<div id="status"></div>
-<svg id="out" width="0" height="0"></svg>
+  <section class="controls">
+    <div class="field"><label for="sides">Side lengths</label><textarea id="sides" rows="2" spellcheck="false">3 1 4 1 5</textarea></div>
+    <span class="label">Examples</span>
+    <div class="examples">
+      <button data-ex="3 1 4 1 5">Sample</button>
+      <button data-ex="1 2 3 4">Statement</button>
+      <button data-ex="15 12 9 9 8 7 6 6 5 5 4 3 3 2 2 2">16 squares</button>
+      <button id="random">Random</button>
+    </div>
+    <div class="run">
+      <label>Time budget (s) <input id="tl" type="number" value="1.7" min="0.1" max="30" step="0.1"></label>
+      <button class="primary" id="go">Pack squares</button>
+    </div>
+  </section>
+
+  <dl class="metrics" id="metrics"></dl>
+
+  <p class="note">Runs the submitted C++ live solver (skyline search with iterative deepening), compiled to WebAssembly.
+  The submission also held a table of 102 packings computed offline for the hidden tests; that table is removed here.
+  The live solver alone earned 68% of the question's points in the competition; the table took it to 97%.</p>
+
+  <figure class="stage" id="stage" data-state="busy">
+    <div class="stagebar"><p id="status" role="status">Loading the solver</p><button id="skip" hidden>Skip animation</button></div>
+    <svg id="out" width="0" height="0" role="img" aria-label="The packing"></svg>
+    <p class="legend">Hatching marks empty space inside the bounding rectangle. Stronger colour means a larger square.</p>
+  </figure>
+</main>
+<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
 
 <script src="app.js"></script>
 <script>
@@ -46,36 +75,61 @@ function check(sq, pos) {
   return null;
 }
 
-function draw(sq, pos) {
+let last;
+function draw(sq, pos) {  // returns [H, W]; squares start hidden and appear in skyline order
   const svg = $('out');
   svg.replaceChildren();
   const H = Math.max(...sq.map((s, i) => pos[i][0] + s)), W = Math.max(...sq.map((s, i) => pos[i][1] + s));
-  const scale = Math.min(760 / W, 560 / H, 40);
-  svg.setAttribute('viewBox', `-0.5 -0.5 ${W + 1} ${H + 1}`);
-  svg.setAttribute('width', (W + 1) * scale);
-  svg.setAttribute('height', (H + 1) * scale);
-  svgEl('rect', {x: 0, y: 0, width: W, height: H, fill: '#fff', stroke: '#1a5fb4', 'stroke-dasharray': '4 3', 'vector-effect': 'non-scaling-stroke'}, svg);
-  sq.forEach((s, i) => {
-    const [x, y] = pos[i];  // x grows downward (row), y to the right (column)
-    svgEl('rect', {x: y, y: x, width: s, height: s, fill: '#e3ebf6', stroke: '#1f1f1f', 'vector-effect': 'non-scaling-stroke'}, svg);
-    if (s * scale >= 14) svgEl('text', {x: y + s / 2, y: x + s / 2, 'font-size': Math.min(s * 0.45, 14 / scale * 1.2), 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#1f1f1f'}, svg).textContent = s;
+  const room = Math.max(240, $('stage').clientWidth - 40);
+  const k = Math.min(48, room / (W + 3), (innerWidth > 900 ? 620 : 520) / (H + 3));  // pixels per unit
+  const m = 28 / k;  // margin for the dimension marks
+  svg.setAttribute('viewBox', `${-m} ${-m} ${W + m * 1.5} ${H + m * 1.5}`);
+  svg.setAttribute('width', (W + m * 1.5) * k);
+  svg.setAttribute('height', (H + m * 1.5) * k);
+  const pat = svgEl('pattern', {id: 'hatch', class: 'hatch', patternUnits: 'userSpaceOnUse', width: 7 / k, height: 7 / k,
+                                patternTransform: 'rotate(45)'}, svgEl('defs', {}, svg));
+  svgEl('line', {x1: 0, y1: 0, x2: 0, y2: 7 / k}, pat);
+  svgEl('rect', {class: 'waste', x: 0, y: 0, width: W, height: H}, svg);
+  const sizes = [...new Set(sq)].sort((a, b) => a - b);
+  const order = sq.map((_, i) => i).sort((a, b) => pos[a][0] - pos[b][0] || pos[a][1] - pos[b][1]);
+  const groups = order.map(i => {
+    const s = sq[i], [x, y] = pos[i], g = svgEl('g', {class: 'sq pending'}, svg);  // x is the row, y the column
+    const t = sizes.length > 1 ? sizes.indexOf(s) / (sizes.length - 1) : 0.5;
+    svgEl('rect', {x: y, y: x, width: s, height: s, style: `fill: color-mix(in oklab, var(--accent) ${Math.round(10 + 32 * t)}%, var(--bg))`}, g);
+    if (s * k >= 18) svgEl('text', {x: y + s / 2, y: x + s / 2, class: 'ink side', 'text-anchor': 'middle', 'dominant-baseline': 'central',
+      'font-size': Math.min(s * 0.42, 13 / k + s * 0.07)}, g).textContent = s;
+    return g;
   });
+  svgEl('rect', {class: 'frame', x: 0, y: 0, width: W, height: H}, svg);
+  // Dimension marks: width above, height on the left
+  const f = 12.5 / k, tick = 5 / k;
+  svgEl('path', {class: 'dim', fill: 'none', d: `M0 ${-m / 2 - tick}v${2 * tick}M0 ${-m / 2}H${W}M${W} ${-m / 2 - tick}v${2 * tick}` +
+                 `M${-m / 2 - tick} 0h${2 * tick}M${-m / 2} 0V${H}M${-m / 2 - tick} ${H}h${2 * tick}`}, svg);
+  for (const [x, y, label, rot] of [[W / 2, -m / 2, W, 0], [-m / 2, H / 2, H, -90]]) {
+    svgEl('text', {x, y, class: 'muted side', 'font-size': f, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+      transform: `rotate(${rot} ${x} ${y})`, 'paint-order': 'stroke', stroke: 'var(--surface)', 'stroke-width': 6 / k}, svg).textContent = label;
+  }
+  const replay = () => { groups.forEach(g => g.classList.add('pending')); play(groups.length, i => groups[i].classList.remove('pending'), replay); };
+  replay();
   return [H, W];
 }
 
 async function run() {
   const sq = ($('sides').value.match(/\d+/g) || []).map(Number);
-  if (!sq.length || sq.length > 60 || sq.some(s => s < 1 || s > 60)) return status('Enter 1 to 60 side lengths, each from 1 to 60.', true);
-  status('Packing...');
+  if (!sq.length || sq.length > 60 || sq.some(s => s < 1 || s > 60)) return status('Enter 1 to 60 side lengths, each from 1 to 60.', 'error');
+  status('Packing', 'busy');
   try {
     const r = await solve('q1', [sq.length, ...sq].join('\n') + '\n', {TL: String(+$('tl').value || 1.7)});
     const pos = r.out.trim().split('\n').map(l => l.trim().split(/\s+/).map(Number));
     const err = check(sq, pos);
-    if (err) return status('Invalid packing: ' + err, true);
-    const [H, W] = draw(sq, pos), A = H * W, L = lowerBound(sq), score = (L / A) ** 20;
-    status(`${sq.length} squares in ${H} × ${W}: area A = ${A}, lower bound L = ${L}, L/A = ${(L / A).toFixed(4)}, ` +
-           `score ${(10 * score).toFixed(2)} of 10. ${(r.ms / 1000).toFixed(2)} s.`);
-  } catch (e) { status('Solver error: ' + e.message, true); }
+    if (err) return status('The solver returned an invalid packing: ' + err + '.', 'error');
+    last = [sq, pos];
+    const [H, W] = draw(sq, pos), A = H * W, L = lowerBound(sq), S = sq.reduce((a, s) => a + s * s, 0);
+    status(A === L ? `Packed ${sq.length} squares at the lower bound.` : `Packed ${sq.length} squares.`);
+    metrics([['Rectangle', `${H} × ${W}`], ['Area A', A], ['Lower bound L', L], ['Empty cells', A - S],
+             ['L / A', (L / A).toFixed(4)], ['Score', `${(10 * (L / A) ** 20).toFixed(2)} of 10`, true],
+             ['Solve time', `${(r.ms / 1000).toFixed(2)} s`]]);
+  } catch (e) { status('The solver stopped: ' + e.message, 'error'); }
 }
 
 document.querySelectorAll('[data-ex]').forEach(b => b.onclick = () => { $('sides').value = b.dataset.ex; run(); });
@@ -85,6 +139,9 @@ $('random').onclick = () => {
   run();
 };
 $('go').onclick = run;
+let width = innerWidth;  // redraw for a new width only; phones resize the height while scrolling
+addEventListener('resize', () => { if (innerWidth !== width && last) { width = innerWidth; draw(...last); } });
+$('sides').value = '15 12 9 9 8 7 6 6 5 5 4 3 3 2 2 2';
 run();
 </script>
 </body>

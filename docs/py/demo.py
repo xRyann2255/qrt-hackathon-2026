@@ -49,18 +49,20 @@ def run(text, seed, extras):
     score = g.score_prediction(case, placements)
     # Rebuild each output page; a character is correct if the matched original page has it at the best shift.
     match = {m["predicted_page"]: (m["true_page"], m["shift"]) for m in score["character_matches"]}
-    chars = {}
+    chars, src = {}, {}
     for pid, page, row, col in placements:
         for dr, line in enumerate(g.decode(case["pieces"][pid])):
             for dc, ch in enumerate(line):
                 chars.setdefault(page, {})[row + dr, col + dc] = ch
+                src[page, row + dr, col + dc] = pid
     out = []
     for page, cells in chars.items():
         r0, c0 = min(r for r, _ in cells), min(c for _, c in cells)
         r1, c1 = max(r for r, _ in cells), max(c for _, c in cells)
-        rows, ok = [], []
+        rows, ok, pids = [], [], []
         for r in range(r0, r1 + 1):
             line, flags = "", ""
+            pids.append([src.get((page, r, c), -1) for c in range(c0, c1 + 1)])
             for c in range(c0, c1 + 1):
                 ch = cells.get((r, c), " ")
                 line += ch
@@ -73,7 +75,7 @@ def run(text, seed, extras):
                 flags += "1" if good or ch == " " else "0"
             rows.append(line)
             ok.append(flags)
-        out.append({"rows": rows, "ok": ok, "matched": page in match, "size": sum(ch != " " for ch in cells.values())})
+        out.append({"rows": rows, "ok": ok, "src": pids, "matched": page in match, "size": sum(ch != " " for ch in cells.values())})
     out.sort(key=lambda p: -p["size"])
     return json.dumps({"pieces": case["pieces"], "extras": case["extras"], "pages": case["pages"], "out": out,
                        "score": score["character_score"], "seconds": elapsed})
@@ -83,4 +85,5 @@ if __name__ == "__main__":
     text = "\n\n".join(g.PARAGRAPHS[:2])
     r = json.loads(run(text, 1, 2))
     assert len(r["pages"]) == 2 and len(r["extras"]) == 2 and 0 <= r["score"] <= 100
+    assert {p for o in r["out"] for row in o["src"] for p in row} - {-1} == set(range(len(r["pieces"])))
     print(len(r["pieces"]), "pieces,", round(r["score"], 1), "%,", round(r["seconds"], 2), "s")
