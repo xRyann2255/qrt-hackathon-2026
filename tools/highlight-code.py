@@ -5,6 +5,7 @@
 # each chunk's lines get data-c, its first line is focusable, and each note follows the code as a hidden tooltip
 # that app.js shows beside its chunk. Rerun after a solution or its notes change.
 import json
+import re
 from html import escape
 from pathlib import Path
 from pygments import highlight
@@ -17,6 +18,9 @@ out.mkdir(exist_ok=True)
 for src in sorted(root.glob('solutions/q*/solution.*')):
     q, code = src.parent.name, src.read_text(encoding='utf-8')
     html = highlight(code, get_lexer_for_filename(src.name, stripnl=False), HtmlFormatter(linespans='L'))
+    # Chrome takes half a second to hit-test a line of thousands of token spans (q3's line 3: 13,369 spans, 518 ms per
+    # mouse move), so such a line goes in as plain text: 0.01 ms.
+    html = re.sub(r'(<span id="L-\d+">)(.*)', lambda m: m[1] + re.sub('<[^>]+>', '', m[2]) if m[2].count('<span') > 1000 else m[0], html)
     notes = root / f'tools/notes/{q}.json'
     if notes.exists():
         end = 0
