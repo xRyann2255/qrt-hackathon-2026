@@ -1,4 +1,4 @@
-# Q5. Bonus, document reassembly: 200 / 200
+# Q5. Bonus, document reassembly
 
 Submitted as Python 3. `solution.py` is byte for byte the code HackerRank held at the close.
 
@@ -9,8 +9,10 @@ padded with spaces, were cut into rectangles. Pieces of only spaces were thrown 
 few pieces from another document were mixed in. Output a page label and position for each piece. The score is the
 share of the pages' non-space characters in the right place, pages matched one to one, each page free to shift.
 
-One hidden test with 457 pieces carried all 200 points. The bonus only counted if every main question scored at
-least 70%.
+One hidden test with 457 pieces carried all 200 points: 200 × the share of characters placed correctly. The bonus
+only counted if every main question scored at least 70%.
+
+**Result: 200 of 200 (100%).**
 
 ## Approach
 

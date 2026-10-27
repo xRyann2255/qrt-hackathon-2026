@@ -1,4 +1,4 @@
-# Q2. Word search generation: 833.40 / 1080
+# Q2. Word search generation
 
 Submitted as C++23 (HackerRank G++ 14.2). `solution.cpp` is byte for byte the code HackerRank held at the close.
 
@@ -10,7 +10,9 @@ every edge (a torus), and wrapped occurrences count for both lists. N must be at
 
 Per test: 60 × min(1, density / 1.7), density = total letters of the required words / N². Any violation scores 0.
 The 18 hidden tests were themed lists (London stations, planets, dinosaurs, cheeses and so on) of 65 to 92 words,
-each with 59 forbidden words, mostly 2 or 3 letters long. Only 2 to 5 letters per test appear in no forbidden word.
+each with 59 forbidden words, mostly 2 or 3 letters long. Only 2 to 5 letters per test appear in no forbidden word. 18 tests at 60 points each give a maximum of 1080.
+
+**Result: 833.40 of 1080 (77.2%).**
 
 ## Approach
 

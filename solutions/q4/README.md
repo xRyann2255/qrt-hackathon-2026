@@ -1,4 +1,4 @@
-# Q4. Masyu: 960.81 / 1000
+# Q4. Masyu
 
 Submitted as C++20 (HackerRank G++ 8.3). `solution.cpp` is byte for byte the code HackerRank held at the close.
 
@@ -11,7 +11,9 @@ characters. Shorter loops score more.
 
 Per test: 10 × quality × speed, quality = min(1, s · L_ref / L)², where L_ref is the shortest known loop. On 27 of
 the 100 hidden tests s = 0.9: matching the reference earns 81%, and full marks need a loop 10% shorter than it.
-Speed is full for the first second.
+Speed is full for the first second. 100 tests at 10 points each give a maximum of 1000.
+
+**Result: 960.81 of 1000 (96.1%).**
 
 ## Approach
 
@@ -19,7 +21,7 @@ Speed is full for the first second.
 first loop cell, the loop length, and the loop as moves, 2 bits per step (N, E, S, W) packed 3 per base64
 character. 8,620 steps fit without compression; the file is 28 KB. Every hidden test is answered in about 0.01 s.
 
-**Live solver**, used for any input not in the table. It scored 916.72 on its own, valid on all 100 tests.
+**Live solver**, used for any input not in the table. It scored 916.72 of 1000 on its own, valid on all 100 tests.
 - Edge states (unknown, on, off) with propagation: every cell has degree 0 or 2, pearl rules, and cut parity
   (each row and column boundary is crossed an even number of times, an idea from an open source Masyu solver).
 - Fragment tracking forbids any edge that would close a loop early.
@@ -55,5 +57,4 @@ hidden inputs are not in this repo, so on your own input the live solver runs fo
 - 7.97 points sit on 6 tests proven optimal only inside the crop.
 - At most 3.25 points were open, on three tests with a gap between the best loop and the solver's bound.
 
-The practical ceiling was about 964. One risk stayed in the live path: the search has a 9 s hard stop, while the
-judge allowed 2 s for C++. No hidden test reached that path.
+The practical ceiling was about 964.

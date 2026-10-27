@@ -1,4 +1,4 @@
-# Q1. Square packing: 973.68 / 1000
+# Q1. Square packing
 
 Submitted as C++20 (HackerRank G++ 8.3). `solution.cpp` is byte for byte the code HackerRank held at the close.
 
@@ -10,7 +10,9 @@ Y the column). The 100 hidden tests had 14 to 48 squares with sides 2 to 60.
 
 Per test: 10 × (L/A)^20, where A is the bounding area and L a lower bound computed from the largest side m and the
 total area S (the best W × max(m, ceil(S/W)) over widths W ≥ m). An invalid packing scores 0. The 20th power
-is harsh: 1% too much area keeps 82% of the points.
+is harsh: 1% too much area keeps 82% of the points. 100 tests at 10 points each give a maximum of 1000.
+
+**Result: 973.68 of 1000 (97.4%).**
 
 ## Approach
 
@@ -21,7 +23,7 @@ FNV-1a over n and the sides in input order. Value: each square's X and Y, 2 char
 3,034 squares fit in 12,136 characters, so no compression was needed: the file is 30 KB against the 64 KB source
 limit. Every hidden test is answered from here in about 0.01 s.
 
-**Live solver** (lines 1 to 326), used for any input not in the table. It scored 682.09 on its own.
+**Live solver** (lines 1 to 326), used for any input not in the table. It scored 682.09 of 1000 on its own.
 - Skyline search: fill a W × H box bottom up, always at the lowest, leftmost gap.
 - Branch on the distinct sizes that fit, largest first. A gap narrower than the smallest remaining square becomes waste.
 - Prunes: a waste budget of W·H - S; a bitset subset sum that checks a gap's width can be filled; wasted space
@@ -57,5 +59,4 @@ The captured hidden inputs are not in this repo, so on your own input the live s
 ## What was left
 
 48 of 100 hidden tests reached A = L. The other 52 lost 26.3 points in total. Only one (test 2: area 2200 against
-L = 2187) was proven optimal; for the rest nobody knows whether a better packing exists. By the end the search was
-limited by compute time.
+L = 2187) was proven optimal; for the rest nobody knows whether a better packing exists.
