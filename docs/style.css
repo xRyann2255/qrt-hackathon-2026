@@ -11,9 +11,16 @@
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
+/* The cursor glow (glow.js): brighter yellow dots over the grid, faded out from the pointer; sits under every pane */
+.glow { position: fixed; left: 0; top: 0; width: 340px; height: 340px; z-index: -1; pointer-events: none; opacity: 0;
+        transition: opacity 0.25s; will-change: transform;
+        background: radial-gradient(circle at 3px 3px, color-mix(in oklab, var(--accent) 85%, transparent) 1.6px, transparent 0) 0 0 / 22px 22px,
+                    linear-gradient(color-mix(in oklab, var(--accent) 5%, transparent), color-mix(in oklab, var(--accent) 5%, transparent));
+        -webkit-mask: radial-gradient(closest-side, #000, transparent); mask: radial-gradient(closest-side, #000, transparent); }
+.glow.on { opacity: 1; }
 /* Background: a faint dot grid, like the puzzle boards, under a soft lighter band at the top */
 body { margin: 0; color: var(--ink); font: 16px/1.65 var(--sans);
-       background: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--ink) 11%, transparent) 1px, transparent 0) 0 0 / 22px 22px,
+       background: radial-gradient(circle at 3px 3px, color-mix(in oklab, var(--ink) 11%, transparent) 1px, transparent 0) 0 0 / 22px 22px,
                    radial-gradient(130% 70% at 50% -15%, #1f2b3d, transparent 70%) no-repeat, var(--bg); }
 a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
 a:hover { color: var(--accent); }
