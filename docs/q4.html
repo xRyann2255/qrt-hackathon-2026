@@ -16,7 +16,7 @@
 <body>
 <header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
-  <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q4.html" aria-current="page">Masyu</a><a href="q5.html">Document Lego</a>
+  <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q3.html">Black box</a><a href="q4.html" aria-current="page">Masyu</a><a href="q5.html">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
 <main class="wrap demo">
@@ -47,9 +47,12 @@
 
   <dl class="metrics" id="metrics"></dl>
 
-  <p class="note">Runs the submitted C++ live solver (propagation, depth first search, then large neighbourhood search for
-  shorter loops), compiled to WebAssembly. The submission also held 103 loops found offline with CP-SAT for the hidden
-  tests; that table is removed here. The live solver alone earned 92% of the question's points; the table took it to 96%.</p>
+  <div class="note">
+    <p>Runs the submitted C++ live solver (propagation, depth first search, then large neighbourhood search for
+    shorter loops), compiled to WebAssembly. The submission also held 103 loops found offline with CP-SAT for the hidden
+    tests; that table is removed here. The live solver alone earned 92% of the question's points; the table took it to 96%.</p>
+    <button id="show-code" aria-controls="code" aria-expanded="false">Show code</button>
+  </div>
 
   <figure class="stage" id="stage" data-state="busy">
     <div class="bar"><b>Q4 Masyu</b></div>
@@ -58,6 +61,10 @@
     <p class="legend"><b>Left click</b> a cell for a white pearl, <b>right click</b> for a black pearl. Left clicking again
     cycles white, black, empty; on a phone, tap to cycle.</p>
   </figure>
+
+  <section class="code" id="code" data-src="solutions/q4/solution.cpp" hidden>
+    <p class="note">The demo above runs this file without its table of 103 loops.</p>
+  </section>
 </main>
 <footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 

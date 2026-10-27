@@ -17,7 +17,7 @@
 <body>
 <header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
-  <nav><a href="q1.html">Packing</a><a href="q2.html" aria-current="page">Word search</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
+  <nav><a href="q1.html">Packing</a><a href="q2.html" aria-current="page">Word search</a><a href="q3.html">Black box</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
 <main class="wrap demo">
@@ -48,9 +48,12 @@
 
   <dl class="metrics" id="metrics"></dl>
 
-  <p class="note">Runs the submitted C++ annealer (descending N), compiled to WebAssembly. The submission also held 18
-  grids computed offline on lab machines for the hidden tests; that table is removed here. The live annealer alone
-  earned 62% of the question's points; the table took it to 77%.</p>
+  <div class="note">
+    <p>Runs the submitted C++ annealer (descending N), compiled to WebAssembly. The submission also held 18
+    grids computed offline on lab machines for the hidden tests; that table is removed here. The live annealer alone
+    earned 62% of the question's points; the table took it to 77%.</p>
+    <button id="show-code" aria-controls="code" aria-expanded="false">Show code</button>
+  </div>
 
   <figure class="stage" id="stage" data-state="busy">
     <div class="bar"><b>Q2 Word search</b></div>
@@ -60,6 +63,10 @@
     <p class="legend">Tap a word to trace it. Arrows mark where it leaves one edge and comes back on the opposite edge.
     Shaded cells are shared by two or more words.</p>
   </figure>
+
+  <section class="code" id="code" data-src="solutions/q2/solution.cpp" hidden>
+    <p class="note">The demo above runs this file without its table of 18 grids, and takes the time budget from the page.</p>
+  </section>
 </main>
 <footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 

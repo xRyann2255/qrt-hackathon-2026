@@ -11,7 +11,7 @@
 <body>
 <header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
-  <nav><a href="q1.html" aria-current="page">Packing</a><a href="q2.html">Word search</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
+  <nav><a href="q1.html" aria-current="page">Packing</a><a href="q2.html">Word search</a><a href="q3.html">Black box</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
 <main class="wrap demo">
@@ -39,9 +39,12 @@
 
   <dl class="metrics" id="metrics"></dl>
 
-  <p class="note">Runs the submitted C++ live solver (skyline search with iterative deepening), compiled to WebAssembly.
-  The submission also held a table of 102 packings computed offline for the hidden tests; that table is removed here.
-  The live solver alone earned 68% of the question's points in the competition; the table took it to 97%.</p>
+  <div class="note">
+    <p>Runs the submitted C++ live solver (skyline search with iterative deepening), compiled to WebAssembly.
+    The submission also held a table of 102 packings computed offline for the hidden tests; that table is removed here.
+    The live solver alone earned 68% of the question's points in the competition; the table took it to 97%.</p>
+    <button id="show-code" aria-controls="code" aria-expanded="false">Show code</button>
+  </div>
 
   <figure class="stage" id="stage" data-state="busy">
     <div class="bar"><b>Q1 Square packing</b></div>
@@ -49,6 +52,10 @@
     <svg id="out" width="0" height="0" role="img" aria-label="The packing"></svg>
     <p class="legend">Hatching marks empty space inside the bounding rectangle. Lighter squares are larger.</p>
   </figure>
+
+  <section class="code" id="code" data-src="solutions/q1/solution.cpp" hidden>
+    <p class="note">The demo above runs this file without its table of 102 packings.</p>
+  </section>
 </main>
 <footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 

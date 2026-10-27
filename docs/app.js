@@ -24,7 +24,7 @@ function svgEl(tag, attrs, parent) {
 function status(text, state = 'done') {
   $('status').textContent = text;
   $('stage').dataset.state = state;
-  if (state !== 'done') { cancelAnimationFrame(frame); $('skip').hidden = true; }
+  if (state !== 'done') { cancelAnimationFrame(anim); $('skip').hidden = true; }
   if (state === 'busy') metrics([]);
 }
 
@@ -39,17 +39,50 @@ function metrics(pairs) {  // [[label, value, isScore], ...] into the results li
 
 // Call step(0) .. step(n - 1) spread over ms; the stage button skips to the end, then offers a replay.
 const still = matchMedia('(prefers-reduced-motion: reduce)');
-let frame;
+let anim;
 function play(n, step, replay, ms = 1500) {
-  cancelAnimationFrame(frame);
+  cancelAnimationFrame(anim);
   const btn = $('skip'), t0 = performance.now();
   let i = 0;
   const upTo = k => { while (i < Math.min(k, n)) step(i++); };
-  const finish = () => { cancelAnimationFrame(frame); upTo(n); btn.textContent = 'Replay'; btn.onclick = replay; };
+  const finish = () => { cancelAnimationFrame(anim); upTo(n); btn.textContent = 'Replay'; btn.onclick = replay; };
   btn.hidden = false;
   btn.textContent = 'Skip animation';
   btn.onclick = finish;
   if (still.matches) return finish();
-  const tick = now => { upTo(Math.ceil((now - t0) / ms * n)); if (i < n) frame = requestAnimationFrame(tick); else finish(); };
-  frame = requestAnimationFrame(tick);
+  const tick = now => { upTo(Math.ceil((now - t0) / ms * n)); if (i < n) anim = requestAnimationFrame(tick); else finish(); };
+  anim = requestAnimationFrame(tick);
+}
+
+// Show code: the pane #code (data-src = the file's repo path) gets code/qN.html, written by tools/highlight-code.py,
+// on first open. The #show-code button toggles it; a pane that starts visible (q3) loads at once.
+{
+  const pane = $('code'), btn = $('show-code');
+  if (pane) {
+    const src = pane.dataset.src;
+    pane.insertAdjacentHTML('afterbegin', `<div class="bar"><b>${src}</b><span><button>Copy</button>` +
+      `<a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/${src}">GitHub</a></span></div>`);
+    const title = pane.querySelector('.bar b'), copy = pane.querySelector('.bar button');
+    let loading;
+    const load = () => loading ||= fetch(`code/${src.split('/')[1]}.html`)
+      .then(r => r.ok ? r.text() : Promise.reject(Error(`HTTP ${r.status}`)))
+      .then(html => {
+        pane.insertAdjacentHTML('beforeend', html);
+        const pre = pane.querySelector('pre');
+        pre.tabIndex = 0;  // so the keyboard can scroll it
+        title.textContent += ` · ${pre.querySelectorAll(':scope > [id]').length} lines`;
+        return pre;
+      });
+    const show = () => load().catch(e => title.textContent = `${src}: could not load (${e.message})`);
+    copy.onclick = () => load().then(pre => navigator.clipboard.writeText(pre.textContent))
+      .then(() => 'Copied', () => 'Copy failed')
+      .then(text => { copy.textContent = text; setTimeout(() => copy.textContent = 'Copy', 1500); });
+    if (btn) btn.onclick = () => {
+      pane.hidden = !pane.hidden;
+      btn.textContent = pane.hidden ? 'Show code' : 'Hide code';
+      btn.setAttribute('aria-expanded', !pane.hidden);
+      if (!pane.hidden) show().then(() => pane.scrollIntoView({block: 'nearest'}));
+    };
+    if (!pane.hidden) show();
+  }
 }

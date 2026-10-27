@@ -30,7 +30,7 @@
 <body>
 <header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
-  <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q4.html">Masyu</a><a href="q5.html" aria-current="page">Document Lego</a>
+  <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q3.html">Black box</a><a href="q4.html">Masyu</a><a href="q5.html" aria-current="page">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
 <main class="wrap demo">
@@ -55,10 +55,13 @@ A public library occupies the old railway station in our town. The ticket office
 
   <dl class="metrics" id="metrics"></dl>
 
-  <p class="note">The full marks submission cannot run here: it was a lookup table of the one hidden test, whose six pages
-  AI agents read as English and wrote out row by row, each row checked by an exact tiling search. This page runs the
-  team's general solver instead (greedy seam matching with an English word model, pure Python in Pyodide). It scored 46%
-  on the statement sample and 20 to 26% on synthetic cases, so expect partial pages.</p>
+  <div class="note">
+    <p>The full marks submission cannot run here: it was a lookup table of the one hidden test, whose six pages
+    AI agents read as English and wrote out row by row, each row checked by an exact tiling search. This page runs the
+    team's general solver instead (greedy seam matching with an English word model, pure Python in Pyodide). It scored 46%
+    on the statement sample and 20 to 26% on synthetic cases, so expect partial pages.</p>
+    <button id="show-code" aria-controls="code" aria-expanded="false">Show code</button>
+  </div>
 
   <figure class="stage" id="stage" data-state="idle">
     <div class="bar"><b>Q5 Document Lego</b></div>
@@ -76,6 +79,10 @@ A public library occupies the old railway station in our town. The ticket office
     </section>
     <details><summary>Show the original pages</summary><div id="orig"></div></details>
   </figure>
+
+  <section class="code" id="code" data-src="solutions/q5/solution.py" hidden>
+    <p class="note">The demo above runs the team's general solver instead of this lookup table.</p>
+  </section>
 </main>
 <footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 

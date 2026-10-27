@@ -233,6 +233,7 @@ LINKEDIN.md          draft posts
 img/leaderboard.jpg  photo of the final leaderboard at the event
 img/pane-grid.png    screenshot of the browser grid of agent terminals
 docs/                interactive pages for Q1, Q2, Q4, Q5: the solvers in WebAssembly and Pyodide (docs/build.sh)
+docs/code/           each solution highlighted for the pages' Show code pane (rerun tools/highlight-code.py)
 docs/fonts/          iA Writer Quattro and Mono, unmodified, SIL Open Font License (OFL-iAWriter.md)
 ```
 

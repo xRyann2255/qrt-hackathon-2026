@@ -111,10 +111,29 @@ button:disabled { opacity: 0.55; cursor: progress; }
 .loop { fill: none; stroke: var(--accent); stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .pearl { stroke: var(--ink); pointer-events: none; } .pearl.B { fill: #000; } .pearl.W { fill: #fff; }
 
+/* Show code (app.js): the submitted file in a pane under the demo, highlighted at build time (tools/highlight-code.py) */
+.code { grid-column: 1 / -1; margin-top: 3rem; background: var(--pane); border: 3px solid var(--rule); }
+.code .bar { flex-wrap: wrap; row-gap: 0; }
+.code .bar span { display: flex; gap: 1.25rem; margin-left: auto; }
+.code .bar button { font: inherit; min-height: 0; padding: 0; border: 0; background: none; color: var(--ink);
+                    text-decoration: underline 1px var(--accent); text-underline-offset: 0.22em; }
+.code .bar button:hover { color: var(--accent); }
+.code > .note { margin: 0; max-width: none; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--rule); }
+.code pre { margin: 0; max-height: 80vh; overflow: auto; padding: 0.75rem 0.75rem 0.75rem 0; font: 13px/1.6 var(--mono); tab-size: 4;
+            counter-reset: line; }
+/* Line numbers come from CSS, so they are never selected or copied */
+.code pre > [id]::before { counter-increment: line; content: counter(line); display: inline-block; width: 3ch; margin: 0 1.5ch 0 0.75rem;
+                           text-align: right; color: var(--muted); opacity: 0.6; }
+/* Four colours: comments muted, keywords yellow, strings and numbers soft blue, the rest ink */
+.code pre [class^=c] { color: var(--muted); font-style: italic; }
+.code pre [class^=k], .code pre .cp, .code pre .ow { color: var(--accent); font-style: normal; }
+.code pre [class^=s], .code pre [class^=m], .code pre .cpf { color: #9cc4e4; font-style: normal; }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 @media (max-width: 600px) {
   .wrap { padding-left: 1rem; padding-right: 1rem; }
   h1 { font-size: 21px; }
   .demo { margin-top: 1.25rem; }
   .stage { --pad: 0.75rem; margin: 0 -1rem; border-width: 3px 0; min-height: 0; }
+  .code { margin-left: -1rem; margin-right: -1rem; border-width: 3px 0; }
 }

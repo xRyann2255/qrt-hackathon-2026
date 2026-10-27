@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q3 Black box: QRT x Imperial hackathon</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script src="glow.js" defer></script>
+</head>
+<body>
+<header class="wrap">
+  <a class="home" href="index.html">Code. Compute. Compete 2026</a>
+  <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q3.html" aria-current="page">Black box</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
+</header>
+<main class="wrap" style="margin-top: 2rem">
+  <h1>Q3. Black box</h1>
+  <p>The whole statement: &ldquo;Query the black box to maximise payoff. Beware the noise.&rdquo; Each of the 51 tests
+  feeds the program one number t; it prints a list of numbers and gets a noisy payoff. A test scores
+  20 &times; (payoff / best possible payoff), clipped to 0 to 1. There is nothing to draw, so this page has no demo.
+  <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q3-black-box">Full question</a></p>
+  <p class="note">Probing showed the payoff is mean(g&middot;f) &minus; 0.5&middot;mean(f&sup2;) for a hidden curve g
+  that depends on t, so the best answer is f = g. The submission stores g for each t as Fourier coefficients, read off
+  one probe at a time, and scored 1020 of 1020.
+  <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/solutions/q3/README.md">How it was found</a></p>
+
+  <section class="code" id="code" data-src="solutions/q3/solution.py"></section>
+</main>
+<footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
