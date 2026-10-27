@@ -4,8 +4,10 @@ On Monday 26 October 2026 I won the QRT x Code. Compute. Compete hackathon at Im
 solo as team Mite: 1st of 68 teams and about 240 participants, with 3987.89 of a possible 4300 points. The test ran
 for two hours on HackerRank: four optimisation problems and a bonus.
 
-I wrote very little of the code by hand. I ran a fleet of AI coding agents, one or more per question, and decided
-what they worked on and what got submitted. This repo has the final submitted code for all five questions and an
+I wrote very little of the code by hand. Instead I was typing for the whole two hours, steering the AI agents that
+wrote it. For each problem I told them how I thought it should be approached and gave them my intuition for the best
+way to solve it. I ran a fleet of these agents, one or more per question, and decided what they worked on and what
+got submitted. This repo has the final submitted code for all five questions and an
 account of how it was done.
 
 The problem statements are in [QUESTIONS.md](QUESTIONS.md). Interactive versions of Q1, Q2, Q4 and Q5, which run the
@@ -102,6 +104,25 @@ flowchart LR
     cmp -- yes --> raise[set-best raises BEST] --> save[Autosaver saves it]
     cmp -- no --> solve
     raise --> solve
+```
+
+### How the agent loop was designed
+
+The loop above was designed with a review loop between two AI models. That review loop applied to the setup only,
+not to the question solutions. Claude writes the plan and Codex reviews it, looking for bugs, failure modes and
+security holes. Claude then reviews that review: it fixes each finding that holds, writes down why it rejects the rest,
+and sends the revised plan back to Codex. A simplicity pass also looks for anything that can be cut. The loop stops
+only when Codex approves with no material findings, the simplicity pass finds nothing to cut and Claude finds nothing
+left to improve; in my experience that catches almost every edge case.
+
+```mermaid
+flowchart LR
+    plan[Claude writes or revises the plan] --> review[Codex reviews it]
+    review --> reply[Claude fixes or rebuts each finding]
+    reply --> cut[Simplicity pass]
+    cut --> done{Nothing left to fix, cut or improve?}
+    done -- no --> plan
+    done -- yes --> final[Final design]
 ```
 
 ## Capture, solve offline, ship a table (Q1, Q2, Q4)

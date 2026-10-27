@@ -8,7 +8,9 @@ On Monday I won the QRT x Code. Compute. Compete hackathon at Imperial College L
 
 We had two hours on HackerRank for four optimisation problems and a bonus: packing squares into the smallest rectangle, building word search grids, maximising the payoff of a noisy black box, solving Masyu loop puzzles, and putting shredded pages of text back together. Each answer ran on hidden tests and earned points for how close it came to the best possible answer. I scored 3987.89 of a possible 4300 (93%), and I was the only team with perfect scores on both the black box and the bonus.
 
-I wrote very little of the code by hand. I ran a group of AI coding agents (Claude Code and Codex), each in its own terminal pane, all visible live in one browser grid, and decided what each one worked on and what got submitted.
+I wrote very little of the code by hand. I ran a group of AI coding agents (Claude Code and Codex), each in its own terminal pane, all visible live in one browser grid, and decided what each one worked on and what got submitted. I was typing the whole time: steering the agents, telling them how I thought each problem should be approached and giving them my intuition for the best way to solve it.
+
+I designed the agent loop itself, not the solutions, with a second loop: Claude writes a plan, Codex reviews it, Claude reviews that review, and they repeat until neither finds anything left to improve. It catches almost every edge case.
 
 Two things I took away:
 - Build the feedback loop first. A script that scored any file on every hidden test in about a minute let each agent measure its own work.
@@ -31,7 +33,9 @@ How each problem paid, and my share of its points:
 - Masyu, 1000 over 100 tests: (shortest known loop / my loop) squared. 96%.
 - Bonus, 200 on one test: share of characters put back in the right place, counted only with at least 70% on every other problem. 100%.
 
-The setup: 22 AI agent sessions (Claude Code on Claude Opus 5.5, Codex on GPT-6), each in its own tmux pane, all visible at once in one browser grid; a script that ran code on every hidden test and returned the score per test; and my university's lab machines over SSH for extra compute.
+The setup: 22 AI agent sessions (Claude Code on Claude Opus 5.5, Codex on GPT-6), each in its own tmux pane, all visible at once in one browser grid; a script that ran code on every hidden test and returned the score per test; and my university's lab machines over SSH for extra compute. I typed throughout, steering the agents and giving them my view of how to approach each problem and my intuition for how to solve it.
+
+The agent loop itself (not the solutions) was designed by two models reviewing each other: Claude writes a plan, Codex reviews it, Claude reviews that review, and it repeats until Codex approves with no material findings and neither finds anything left to cut or improve.
 
 What worked:
 - Packing, word search and Masyu: the first submission echoed its input to stderr, which the platform returns for hidden tests. Each input was then solved offline for minutes and shipped as a lookup table with a live solver as fallback.
