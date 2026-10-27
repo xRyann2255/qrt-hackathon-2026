@@ -4,7 +4,7 @@
 @font-face { font-family: "iA Writer Mono"; src: url(fonts/iAWriterMonoS-Regular.woff2) format("woff2"); font-weight: 400; font-display: swap; }
 :root {
   --bg: #131a24; --pane: #171f2b; --bar: #1e2836; --ink: #dfe6ee; --muted: #8d9bb0; --rule: #2b394c;
-  --accent: #f2d061; --on-accent: #131a24; --hot: #ff8f3d; --err: #ff8a80;
+  --accent: #f2d061; --on-accent: #131a24; --err: #ff8a80;
   --sans: "iA Writer Quattro", ui-sans-serif, system-ui, sans-serif;
   --mono: "iA Writer Mono", ui-monospace, Menlo, Consolas, monospace;
   color-scheme: dark;
