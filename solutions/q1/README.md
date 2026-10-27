@@ -58,4 +58,4 @@ The captured hidden inputs are not in this repo, so on your own input the live s
 
 48 of 100 hidden tests reached A = L. The other 52 lost 26.3 points in total. Only one (test 2: area 2200 against
 L = 2187) was proven optimal; for the rest nobody knows whether a better packing exists. By the end the search was
-limited by free cores.
+limited by compute time.
