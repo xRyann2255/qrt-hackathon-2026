@@ -15,6 +15,8 @@ Three things I took away:
 - Read the feedback before modelling it. On the black box, one field turned out to be exact while the others were noisy. That took the score from 687 to the full 1020 in 11 minutes.
 - Merge independent attempts. The last improvement on the word search came from an agent that never saw the rest of our work.
 
+The prize was AirPods Pro with QRT branding, and a fast track to interview for QRT's quant developer and quant research roles.
+
 Thanks to QRT and the organisers for the problems and the evening. Write-up and code: <link>
 
 #hackathon #optimisation #AI
@@ -33,6 +35,8 @@ What worked:
 - Bonus: agents read the shredded pages as English and checked each line with an exact tiling search over the pieces.
 
 What went wrong: the server ran out of memory and killed the submission browser for 20 minutes, and the Codex usage allowance ran out within the hour.
+
+The prize was AirPods Pro with QRT branding, and a fast track to interview for QRT's quant developer and quant research roles.
 
 Write-up and code: <link>
 

@@ -19,7 +19,7 @@ solvers in the browser on your own input, are in [docs/](docs).
 | 2 | AAST | 3636.04 |
 | 3 | Goooo...oon | 3590.67 |
 
-68 teams, field average 2301.35, winning margin 351.85. Prize: AirPods Pro.
+68 teams, field average 2301.35, winning margin 351.85. Prize: AirPods Pro with QRT branding, and a fast track to interview for QRT's quant developer and quant research roles.
 
 | Question | Score | Max | Code |
 |---|---|---|---|
