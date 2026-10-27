@@ -4,7 +4,10 @@ On Monday 26 October 2026 I won the QRT x Code. Compute. Compete hackathon at Im
 solo as team Mite: 1st of 68 teams and about 240 participants, with 3987.89 of a possible 4300 points. The test ran
 for two hours on HackerRank: four optimisation problems and a bonus.
 
-![The final leaderboard on the screen at the event, with Mite first on 3987.89](img/leaderboard.jpg)
+![The final leaderboard, with Mite first on 3987.89](img/leaderboard.png)
+
+*A recreation of the final leaderboard as it was shown on screen at the event, redrawn from
+[this photo of the screen](img/leaderboard-photo.jpg).*
 
 I wrote very little of the code by hand. Instead I was typing for the whole two hours, steering the AI agents that
 wrote it. For each problem I told them how I thought it should be approached and gave them my intuition for the best
@@ -230,7 +233,8 @@ solutions/q1 .. q5   the final submitted code, unchanged, each with a README (ap
 tools/set-best       write a score file only if the new score is higher (flock + atomic rename)
 tools/capture.py     recover inputs that a submission echoed to stderr
 LINKEDIN.md          draft posts
-img/leaderboard.jpg  photo of the final leaderboard at the event
+img/leaderboard.png  the final leaderboard, redrawn from leaderboard-photo.jpg (the photo at the event, straightened)
+tools/leaderboard/   every row read from the photo (leaderboard.json) and render.py, which checks them and draws the png
 img/pane-grid.png    screenshot of the browser grid of agent terminals
 docs/                interactive pages for Q1, Q2, Q4, Q5: the solvers in WebAssembly and Pyodide (docs/build.sh)
 docs/code/           each solution highlighted for the pages' Show code pane (rerun tools/highlight-code.py)
