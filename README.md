@@ -153,6 +153,9 @@ The live solvers alone scored 68% (Q1), 62% (Q2) and 92% (Q4). The tables took t
 
 ## Per question
 
+Only Q3 and Q5 reached full marks. The Q1, Q2 and Q4 solutions are not optimal: they are the best I came up
+with in the two hours.
+
 ### Q1. Square packing: 97.4%
 
 **Key insight.** In every hidden test the total area factored into a rectangle that fits the largest square, so L

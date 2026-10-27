@@ -13,7 +13,7 @@ Per test: 10 × quality × speed, quality = min(1, s · L_ref / L)², where L_re
 the 100 hidden tests s = 0.9: matching the reference earns 81%, and full marks need a loop 10% shorter than it.
 Speed is full for the first second. 100 tests at 10 points each give a maximum of 1000.
 
-**Result: 960.81 of 1000 (96.1%).**
+**Result: 960.81 of 1000 (96.1%).** Not optimal: this is the best I came up with in the two hours.
 
 ## Approach
 

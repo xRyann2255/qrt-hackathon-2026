@@ -12,7 +12,7 @@ Per test: 60 × min(1, density / 1.7), density = total letters of the required w
 The 18 hidden tests were themed lists (London stations, planets, dinosaurs, cheeses and so on) of 65 to 92 words,
 each with 59 forbidden words, mostly 2 or 3 letters long. Only 2 to 5 letters per test appear in no forbidden word. 18 tests at 60 points each give a maximum of 1080.
 
-**Result: 833.40 of 1080 (77.2%).**
+**Result: 833.40 of 1080 (77.2%).** Not optimal: this is the best I came up with in the two hours.
 
 ## Approach
 

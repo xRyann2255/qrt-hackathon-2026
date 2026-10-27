@@ -12,7 +12,7 @@ Per test: 10 × (L/A)^20, where A is the bounding area and L a lower bound compu
 total area S (the best W × max(m, ceil(S/W)) over widths W ≥ m). An invalid packing scores 0. The 20th power
 is harsh: 1% too much area keeps 82% of the points. 100 tests at 10 points each give a maximum of 1000.
 
-**Result: 973.68 of 1000 (97.4%).**
+**Result: 973.68 of 1000 (97.4%).** Not optimal: this is the best I came up with in the two hours.
 
 ## Approach
 
