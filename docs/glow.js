@@ -13,7 +13,7 @@ if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(pr
   let px = 0, py = 0, fx = 0, fy = 0, seen = false, running = false, last = 0;
   const trail = [];  // {x, y, e}: page coordinates (so scrolling leaves the wake in place), energy 0..1
 
-  const frame = now => {  // const, not a function declaration: that would leak into app.js's global frame
+  const frame = now => {  // const: a function declared in this block would leak into the global scope all the pages' scripts share
     const dt = Math.min(50, now - last || 16); last = now;
     // The follower eases toward the pointer; its speed sets the energy of the point it drops
     const k = 1 - Math.exp(-dt / FOLLOW), nx = fx + (px - fx) * k, ny = fy + (py - fy) * k;
