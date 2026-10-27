@@ -235,6 +235,7 @@ img/leaderboard.jpg  photo of the final leaderboard at the event
 img/scores.png       histogram of every team's total
 img/pane-grid.png    screenshot of the browser grid of agent terminals
 docs/                interactive pages for Q1, Q2, Q4, Q5: the solvers in WebAssembly and Pyodide (docs/build.sh)
+docs/fonts/          iA Writer Quattro and Mono, unmodified, SIL Open Font License (OFL-iAWriter.md)
 ```
 
 The captured hidden inputs are not included: they are QRT's test data. On any other input each program runs its live

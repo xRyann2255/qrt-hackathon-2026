@@ -6,21 +6,14 @@
 <title>Q1 Square packing: QRT x Imperial hackathon demo</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
-<style>
-  .sq rect { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
-  .sq { transition: opacity 0.15s; }
-  .hatch line { stroke: var(--muted); stroke-opacity: 0.5; stroke-width: 1; vector-effect: non-scaling-stroke; }
-  .waste { fill: url(#hatch); }
-  .side { font-variant-numeric: tabular-nums; }
-</style>
 </head>
 <body>
-<header class="site">
+<header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
   <nav><a href="q1.html" aria-current="page">Packing</a><a href="q2.html">Word search</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
-<main class="demo">
+<main class="wrap demo">
   <section class="intro">
     <h1>Q1. Square packing</h1>
     <p>Place squares with integer sides on a grid, without overlaps, so the bounding rectangle has the smallest area A.
@@ -50,12 +43,13 @@
   The live solver alone earned 68% of the question's points in the competition; the table took it to 97%.</p>
 
   <figure class="stage" id="stage" data-state="busy">
+    <div class="bar"><b>Q1 Square packing</b></div>
     <div class="stagebar"><p id="status" role="status">Loading the solver</p><button id="skip" hidden>Skip animation</button></div>
     <svg id="out" width="0" height="0" role="img" aria-label="The packing"></svg>
-    <p class="legend">Hatching marks empty space inside the bounding rectangle. Stronger colour means a larger square.</p>
+    <p class="legend">Hatching marks empty space inside the bounding rectangle. Lighter squares are larger.</p>
   </figure>
 </main>
-<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
+<footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 
 <script src="app.js"></script>
 <script>
@@ -95,7 +89,7 @@ function draw(sq, pos) {  // returns [H, W]; squares start hidden and appear in 
   const groups = order.map(i => {
     const s = sq[i], [x, y] = pos[i], g = svgEl('g', {class: 'sq pending'}, svg);  // x is the row, y the column
     const t = sizes.length > 1 ? sizes.indexOf(s) / (sizes.length - 1) : 0.5;
-    svgEl('rect', {x: y, y: x, width: s, height: s, style: `fill: color-mix(in oklab, var(--accent) ${Math.round(10 + 32 * t)}%, var(--bg))`}, g);
+    svgEl('rect', {x: y, y: x, width: s, height: s, style: `fill: color-mix(in oklab, var(--ink) ${Math.round(10 + 32 * t)}%, var(--pane))`}, g);
     if (s * k >= 18) svgEl('text', {x: y + s / 2, y: x + s / 2, class: 'ink side', 'text-anchor': 'middle', 'dominant-baseline': 'central',
       'font-size': Math.min(s * 0.42, 13 / k + s * 0.07)}, g).textContent = s;
     return g;
@@ -107,7 +101,7 @@ function draw(sq, pos) {  // returns [H, W]; squares start hidden and appear in 
                  `M${-m / 2 - tick} 0h${2 * tick}M${-m / 2} 0V${H}M${-m / 2 - tick} ${H}h${2 * tick}`}, svg);
   for (const [x, y, label, rot] of [[W / 2, -m / 2, W, 0], [-m / 2, H / 2, H, -90]]) {
     svgEl('text', {x, y, class: 'muted side', 'font-size': f, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-      transform: `rotate(${rot} ${x} ${y})`, 'paint-order': 'stroke', stroke: 'var(--surface)', 'stroke-width': 6 / k}, svg).textContent = label;
+      transform: `rotate(${rot} ${x} ${y})`, 'paint-order': 'stroke', stroke: 'var(--pane)', 'stroke-width': 6 / k}, svg).textContent = label;
   }
   const replay = () => { groups.forEach(g => g.classList.add('pending')); play(groups.length, i => groups[i].classList.remove('pending'), replay); };
   replay();

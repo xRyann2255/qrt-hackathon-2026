@@ -8,21 +8,17 @@
 <link rel="stylesheet" href="style.css">
 <style>
   #out { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-  .cell { fill: var(--bg); }
-  .cell:hover { fill: color-mix(in oklab, var(--accent) 8%, var(--bg)); }
-  .loop { fill: none; stroke: var(--accent); stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
-  .pearl { stroke: var(--ink); pointer-events: none; }
-  .pearl.B { fill: #000; }
-  .pearl.W { fill: #fff; }
+  .cell { fill: var(--pane); }
+  .cell:hover { fill: color-mix(in oklab, var(--accent) 8%, var(--pane)); }
 </style>
 </head>
 <body>
-<header class="site">
+<header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
   <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q4.html" aria-current="page">Masyu</a><a href="q5.html">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
-<main class="demo">
+<main class="wrap demo">
   <section class="intro">
     <h1>Q4. Masyu</h1>
     <p>Draw one closed loop through cell centres that visits every pearl. It goes straight through white pearls and turns
@@ -55,11 +51,12 @@
   tests; that table is removed here. The live solver alone earned 92% of the question's points; the table took it to 96%.</p>
 
   <figure class="stage" id="stage" data-state="busy">
+    <div class="bar"><b>Q4 Masyu</b></div>
     <div class="stagebar"><p id="status" role="status">Loading the solver</p><button id="skip" hidden>Skip animation</button></div>
     <svg id="out" width="0" height="0" role="img" aria-label="The Masyu board"></svg>
   </figure>
 </main>
-<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
+<footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 
 <script src="app.js"></script>
 <script>

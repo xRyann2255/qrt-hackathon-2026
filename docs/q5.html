@@ -12,10 +12,10 @@
   .panel .note { margin-bottom: 0.75rem; }
   .pieces { display: flex; flex-wrap: wrap; gap: 5px; }
   .piece, .page { font-family: var(--mono); line-height: 1.3; margin: 0; background: var(--bg); color: var(--ink); }
-  .piece { font-size: 11.5px; border: 1px solid var(--rule); border-radius: 3px; padding: 2px 4px; transition: opacity 0.2s; }
+  .piece { font-size: 11.5px; border: 1px solid var(--rule); padding: 2px 4px; transition: opacity 0.2s; }
   .piece.extra { border-style: dashed; border-color: var(--muted); }
   .piece.used { opacity: 0.18; }
-  .page { width: fit-content; max-width: 100%; font-size: clamp(9.5px, 2.4vw, 12.5px); border: 1px solid var(--rule); border-radius: 4px; padding: 0.75rem 0.9rem;
+  .page { width: fit-content; max-width: 100%; font-size: clamp(9.5px, 2.4vw, 12.5px); border: 1px solid var(--rule); padding: 0.75rem 0.9rem;
           overflow-x: auto; margin-bottom: 0.75rem; }
   .bad { text-decoration: underline wavy var(--err); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
   .hl { background: color-mix(in oklab, var(--accent) 28%, transparent); }
@@ -27,12 +27,12 @@
 </style>
 </head>
 <body>
-<header class="site">
+<header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
   <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q4.html">Masyu</a><a href="q5.html" aria-current="page">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
-<main class="demo">
+<main class="wrap demo">
   <section class="intro">
     <h1>Q5. Bonus: Document Lego</h1>
     <p>A few pages of English text, each wrapped to its own width and height, were cut into rectangles, shuffled and mixed
@@ -60,6 +60,7 @@ A public library occupies the old railway station in our town. The ticket office
   on the statement sample and 20 to 26% on synthetic cases, so expect partial pages.</p>
 
   <figure class="stage" id="stage" data-state="idle">
+    <div class="bar"><b>Q5 Document Lego</b></div>
     <div class="stagebar"><p id="status" role="status">Press Cut and reassemble to cut your text into pieces and let the
     solver put them back. The first run downloads Python, about 12 MB.</p><button id="skip" hidden>Skip animation</button></div>
     <section class="panel">
@@ -75,7 +76,7 @@ A public library occupies the old railway station in our town. The ticket office
     <details><summary>Show the original pages</summary><div id="orig"></div></details>
   </figure>
 </main>
-<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
+<footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 
 <script src="app.js"></script>
 <script>

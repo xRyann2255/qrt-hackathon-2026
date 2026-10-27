@@ -8,25 +8,18 @@
 <link rel="stylesheet" href="style.css">
 <style>
   .words-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 0.75rem; }
-  .letter { font-family: var(--mono); font-weight: 500; fill: var(--ink); transition: opacity 0.12s; }
-  .shared1 { fill: color-mix(in oklab, var(--ink) 6%, var(--bg)); }
-  .shared2 { fill: color-mix(in oklab, var(--ink) 12%, var(--bg)); }
-  .plain { fill: var(--bg); }
-  .capsule { stroke: color-mix(in oklab, var(--accent) 30%, transparent); stroke-linecap: round; fill: none; }
-  .wrap-mark { fill: var(--accent); }
-  .first { fill: var(--accent); font-weight: 700; }
   #words { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center; margin-top: 1rem; }
   #words button { font: 0.8125rem var(--mono); min-height: 1.9rem; padding: 0 0.55rem; }
   #words button[aria-pressed=true] { border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 </style>
 </head>
 <body>
-<header class="site">
+<header class="wrap">
   <a class="home" href="index.html">Code. Compute. Compete 2026</a>
   <nav><a href="q1.html">Packing</a><a href="q2.html" aria-current="page">Word search</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
-<main class="demo">
+<main class="wrap demo">
   <section class="intro">
     <h1>Q2. Word search generation</h1>
     <p>Build the smallest N &times; N letter grid that contains every required word in a straight line (8 directions)
@@ -59,6 +52,7 @@
   earned 62% of the question's points; the table took it to 77%.</p>
 
   <figure class="stage" id="stage" data-state="busy">
+    <div class="bar"><b>Q2 Word search</b></div>
     <div class="stagebar"><p id="status" role="status">Loading the solver</p><button id="skip" hidden>Skip animation</button></div>
     <svg id="out" width="0" height="0" role="img" aria-label="The letter grid"></svg>
     <div id="words"></div>
@@ -66,7 +60,7 @@
     Shaded cells are shared by two or more words.</p>
   </figure>
 </main>
-<footer><p>Problems by QRT. Solvers and write-up by team Mite.</p></footer>
+<footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 
 <script src="app.js"></script>
 <script>
