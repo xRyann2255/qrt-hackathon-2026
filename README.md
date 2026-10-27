@@ -87,9 +87,9 @@ flowchart LR
 - **Saving.** Each question had one BEST file, raised by [`tools/set-best`](tools/set-best) only when a score was
   higher. An autosaver kept the code saved on HackerRank in line with it.
 
-![Sketch of the browser page: eight live terminals in a grid, one per agent](img/pane-grid.svg)
+![The browser grid at 19:01: five agents working live, four Claude Code panes and one Codex pane](img/pane-grid.png)
 
-*A sketch of the grid page, not a screenshot.*
+*The grid page at 19:01, eleven minutes after the test opened.*
 
 Every agent followed the same protocol file (CLAUDE.md for Claude Code, AGENTS.md for Codex): restate the problem,
 attack it with parallel subagents, check the answer two ways, measure it on every test, and raise BEST only on a
@@ -223,7 +223,7 @@ solutions/q1 .. q5   the final submitted code, unchanged, each with a README (ap
 tools/set-best       write a score file only if the new score is higher (flock + atomic rename)
 tools/capture.py     recover inputs that a submission echoed to stderr
 LINKEDIN.md          draft posts
-img/pane-grid.svg    sketch of the browser grid of agent terminals
+img/pane-grid.png    screenshot of the browser grid of agent terminals
 docs/                interactive pages for Q1, Q2, Q4, Q5: the solvers in WebAssembly and Pyodide (docs/build.sh)
 ```
 
