@@ -1,0 +1,6 @@
+[
+  {"lines": [1, 2], "title": "The answer table", "text": "TABLE is a JSON dict, compressed with zlib and stored as base85 text. It maps the SHA-256 of a test's pieces to where every piece goes, for two inputs: the hidden test and the statement sample. AI agents worked the pages out offline by reading the pieces as English, and an exact tiling search checked every row."},
+  {"lines": [3, 5], "title": "Look up, or fall back", "text": "assemble hashes the pieces in input order and returns the stored placements. Any other input gets one piece per page, [i, i, 0, 0], which is valid but scores about 3%."},
+  {"lines": [6, 8], "title": "Read the pieces", "text": "Reads N, then N pieces, one per line: the rows of a piece are split by | and spaces are written as _."},
+  {"lines": [9, 12], "title": "Write the placements", "text": "Prints piece, page, row and column for each piece, to the file named by OUTPUT_PATH when HackerRank sets it, otherwise to standard output."}
+]

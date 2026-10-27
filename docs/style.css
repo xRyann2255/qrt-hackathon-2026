@@ -120,7 +120,7 @@ button:disabled { opacity: 0.55; cursor: progress; }
 .code .bar button:hover { color: var(--accent); }
 .code > .note { margin: 0; max-width: none; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--rule); }
 .code pre { margin: 0; max-height: 80vh; overflow: auto; padding: 0.75rem 0.75rem 0.75rem 0; font: 13px/1.6 var(--mono); tab-size: 4;
-            counter-reset: line; }
+            counter-reset: line; display: grid; grid-template-columns: minmax(max-content, 1fr); }  /* one full width row per line */
 /* Line numbers come from CSS, so they are never selected or copied */
 .code pre > [id]::before { counter-increment: line; content: counter(line); display: inline-block; width: 3ch; margin: 0 1.5ch 0 0.75rem;
                            text-align: right; color: var(--muted); opacity: 0.6; }
@@ -128,6 +128,27 @@ button:disabled { opacity: 0.55; cursor: progress; }
 .code pre [class^=c] { color: var(--muted); font-style: italic; }
 .code pre [class^=k], .code pre .cp, .code pre .ow { color: var(--accent); font-style: normal; }
 .code pre [class^=s], .code pre [class^=m], .code pre .cpf { color: #9cc4e4; font-style: normal; }
+/* Notes (tools/notes): a faint bar in the gutter marks each chunk; the chunk under the pointer, focus or a tap is lit
+   and its note shows beside the code (above it on a phone). All notes share one grid cell, so the panel never resizes. */
+.code pre > [data-c] { background: linear-gradient(color-mix(in oklab, var(--muted) 40%, transparent), color-mix(in oklab, var(--muted) 40%, transparent)) 0 0 / 2px 100% no-repeat; }
+.code pre > [tabindex] { background-position: 0 4px; outline: none; }
+.code pre > .on { background-color: color-mix(in oklab, var(--accent) 9%, transparent); background-image: linear-gradient(var(--accent), var(--accent)); }
+.annotated { display: grid; grid-template-columns: minmax(0, 1fr) 20rem; }
+.annotated > .highlight { border-right: 1px solid var(--rule); }
+.notes { display: grid; align-self: start; position: sticky; top: 1rem; padding: 0.75rem 1rem 1rem;
+         font-size: 14px; line-height: 1.55; }
+.notes > div { grid-area: 1 / 1; visibility: hidden; }
+.notes > .on { visibility: visible; }
+.notes small { font: 12px var(--mono); color: var(--muted); white-space: nowrap; }
+.notes p { margin: 0.3rem 0 0; }
+.notes .touch { display: none; }  /* the empty state says Hover over, or Tap on a touch screen */
+@media (hover: none) { .notes .mouse { display: none; } .notes .touch { display: inline; } }
+@media (max-width: 900px) {
+  .annotated { grid-template-columns: minmax(0, 1fr); }
+  .annotated > .highlight { border-right: 0; }
+  .annotated pre { max-height: 55vh; }  /* so the note above and the code fit on one screen */
+  .notes { order: -1; top: 0; z-index: 1; background: var(--pane); border-bottom: 1px solid var(--rule); padding: 0.6rem 0.75rem 0.75rem; }
+}
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 @media (max-width: 600px) {

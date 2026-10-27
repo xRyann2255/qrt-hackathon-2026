@@ -71,6 +71,21 @@ function play(n, step, replay, ms = 1500) {
         const pre = pane.querySelector('pre');
         pre.tabIndex = 0;  // so the keyboard can scroll it
         title.textContent += ` · ${pre.querySelectorAll(':scope > [id]').length} lines`;
+        const notes = pane.querySelector('.notes');
+        if (notes) {  // light the chunk ([data-c] lines and its note) under the pointer, the keyboard focus or a tap
+          let lit = [notes.firstElementChild];
+          const pick = c => {
+            if (lit[0].dataset.c === c) return;
+            lit.forEach(e => e.classList.remove('on'));
+            lit = [...pane.querySelectorAll(`[data-c="${c}"]`)];
+            lit.forEach(e => e.classList.add('on'));
+          };
+          const chunk = e => e.target.closest('[data-c]')?.dataset.c ?? '-1';
+          pre.onpointerover = e => e.pointerType !== 'touch' && pick(chunk(e));
+          pre.onpointerleave = e => e.pointerType !== 'touch' && pick('-1');
+          pre.onclick = e => pick(chunk(e));
+          pre.addEventListener('focusin', e => pick(chunk(e)));
+        }
         return pre;
       });
     const show = () => load().catch(e => title.textContent = `${src}: could not load (${e.message})`);

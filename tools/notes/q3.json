@@ -1,0 +1,9 @@
+[
+  {"lines": [1, 2], "title": "The 51 targets", "text": "TGT holds the best possible payoff, the target, for each of the 51 tests, read from the test feedback. It sets the scale of each answer."},
+  {"lines": [3, 3], "title": "Measured coefficients", "text": "C has one row per test and 101 Fourier coefficients per row, 5,151 numbers in all. Each one was read off the score of a single probe, so row i describes the hidden curve at t = i / 50."},
+  {"lines": [4, 9], "title": "Fourier basis on 100 cells", "text": "h(k) builds basis vector k on N = 100 equal cells of [0, 1]: a constant for k = 0, then cosines and sines of rising frequency, ending with the alternating vector at k = 100. Each is scaled so the mean of its squares is 1, which is what let one probe measure one coefficient exactly."},
+  {"lines": [10, 16], "title": "Rebuild the hidden curve", "text": "probe(t) picks the row for the nearest t on the 0.02 grid and adds up coefficient times basis vector for every nonzero coefficient. The sum is the hidden curve g, and f = g is the answer with the highest payoff."},
+  {"lines": [17, 19], "title": "A branch that never runs", "text": "None is not None is always false, so these lines do nothing. The script that generated this file left them in."},
+  {"lines": [20, 21], "title": "Scale to the target", "text": "Multiplies by sqrt(2 x target), the unit the coefficients were measured in, so f matches g in size. At f = g the payoff equals the target: a ratio of 1 and full marks."},
+  {"lines": [22, 26], "title": "Read t, write the answer", "text": "Reads one number t from standard input and writes the 100 values, one per line, to the file named by OUTPUT_PATH, where HackerRank collects the output."}
+]
