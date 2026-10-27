@@ -6,9 +6,6 @@ for two hours on HackerRank: four optimisation problems and a bonus.
 
 ![The final leaderboard on the screen at the event, with Mite first on 3987.89](img/leaderboard.jpg)
 
-![Histogram of all 68 team totals in bins of 250 points: mean 2301.35, median 2487.77, the largest bin 2500 to 2750
-with 11 teams, and Mite alone in the 3750 to 4000 bin with 3987.89](img/scores.png)
-
 I wrote very little of the code by hand. Instead I was typing for the whole two hours, steering the AI agents that
 wrote it. For each problem I told them how I thought it should be approached and gave them my intuition for the best
 way to solve it. I was also the orchestrator: I decided what each agent worked on, where the compute went, what got
@@ -229,10 +226,8 @@ QUESTIONS.md         the five problem statements, with diagrams redrawn from the
 solutions/q1 .. q5   the final submitted code, unchanged, each with a README (approach, build, run)
 tools/set-best       write a score file only if the new score is higher (flock + atomic rename)
 tools/capture.py     recover inputs that a submission echoed to stderr
-tools/score-distribution.py  draw img/scores.png from the leaderboard totals
 LINKEDIN.md          draft posts
 img/leaderboard.jpg  photo of the final leaderboard at the event
-img/scores.png       histogram of every team's total
 img/pane-grid.png    screenshot of the browser grid of agent terminals
 docs/                interactive pages for Q1, Q2, Q4, Q5: the solvers in WebAssembly and Pyodide (docs/build.sh)
 docs/fonts/          iA Writer Quattro and Mono, unmodified, SIL Open Font License (OFL-iAWriter.md)
