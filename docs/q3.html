@@ -7,6 +7,16 @@
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 <script src="glow.js" defer></script>
+<style>
+  .zero { stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .curve-g, .curve-f, .wave { fill: none; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .curve-g { stroke: var(--ink); stroke-width: 1.5; }
+  .curve-f { stroke: var(--accent); stroke-width: 2; }
+  .wave { stroke: var(--accent); stroke-width: 1.5; }
+  .pick { display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0 0; }
+  .pick output { font: 15px/1 var(--mono); color: var(--ink); min-width: 2.6rem; }
+  .pick input { flex: 1; min-width: 0; padding: 0; border: 0; background: none; accent-color: var(--accent); }
+</style>
 </head>
 <body>
 <header class="wrap">
@@ -14,21 +24,46 @@
   <nav><a href="q1.html">Packing</a><a href="q2.html">Word search</a><a href="q3.html" aria-current="page">Black box</a><a href="q4.html">Masyu</a><a href="q5.html">Document Lego</a>
     <a href="https://github.com/xRyann2255/qrt-hackathon-2026#readme">Write-up</a></nav>
 </header>
-<main class="wrap" style="margin-top: 2rem">
-  <h1>Q3. Black box</h1>
-  <p>The whole statement: &ldquo;Query the black box to maximise payoff. Beware the noise.&rdquo; Each of the 51 tests
-  feeds the program one number t; it prints a list of numbers and gets a noisy payoff. A test scores
-  20 &times; (payoff / best possible payoff), clipped to 0 to 1. There is nothing to draw, so this page has no demo.
-  <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q3-black-box">Full question</a></p>
-  <p class="note">Probing showed the payoff is mean(g&middot;f) &minus; 0.5&middot;mean(f&sup2;) for a hidden curve g
-  that depends on t, so the best answer is f = g. The submission stores g for each t as Fourier coefficients, read off
-  one probe at a time, and scored 1020 of 1020.
-  <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/solutions/q3/README.md">How it was found</a></p>
+<main class="wrap demo">
+  <section class="intro">
+    <h1>Q3. Black box</h1>
+    <p>The whole statement: &ldquo;Query the black box to maximise payoff. Beware the noise.&rdquo; Each of the 51 tests
+    feeds the program one number t; it prints a list of numbers and gets a noisy payoff. A test scores
+    20 &times; (payoff / best possible payoff), clipped to 0 to 1.
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/QUESTIONS.md#q3-black-box">Full question</a></p>
+    <p class="note">Probing showed the payoff is mean(g&middot;f) &minus; 0.5&middot;mean(f&sup2;) for a hidden curve g
+    that depends on t, so the best answer is f = g. The submission stores g for each t as Fourier coefficients, read off
+    one probe at a time, and scored 1020 of 1020.
+    <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/solutions/q3/README.md">How it was found</a></p>
+  </section>
+
+  <section class="controls">
+    <label class="pick">Test t <output id="tval">0.14</output><input id="t" type="range" min="0" max="50" value="7"
+      aria-label="Test input t, from 0 to 1 in steps of 0.02"></label>
+  </section>
+
+  <dl class="metrics" id="metrics"></dl>
+
+  <p class="note">Scores marked measured are HackerRank's, for the answers submitted with 5, 11 and 21 waves and for
+  the final answer; the rest are computed from the recovered model. Each wave's size was read off two probes, then a
+  residual pass corrected all 100 with one probe each. g is drawn from the final answer, which scored 20 of 20 on every
+  test, so it matches the hidden curve to within rounding.
+  <a href="https://github.com/xRyann2255/qrt-hackathon-2026/blob/main/docs/q3/data.py">Data sources</a></p>
+
+  <figure class="stage" id="stage" data-state="done">
+    <div class="bar"><b>Q3 Black box</b></div>
+    <div class="stagebar"><p id="status" role="status">Loading the recovered data</p><button id="skip" hidden>Skip animation</button></div>
+    <svg id="plot" width="800" height="300" viewBox="0 0 800 300" role="img"
+         aria-label="The hidden curve g for the chosen test, and the answer f built from Fourier waves converging onto it"></svg>
+    <p class="legend"><b>White</b>: g, the hidden curve for this test, averaged over the 100 cells.
+      <b style="color: var(--accent)">Yellow</b>: the answer f, one wave at a time. Faint: the wave being added.</p>
+  </figure>
 
   <section class="code" id="code" data-src="solutions/q3/solution.py"></section>
 </main>
 <footer class="wrap">Problems by QRT. Solvers and write-up by team Mite. Set in iA Writer Quattro and Mono.</footer>
 
 <script src="app.js"></script>
+<script src="q3/anim.js"></script>
 </body>
 </html>

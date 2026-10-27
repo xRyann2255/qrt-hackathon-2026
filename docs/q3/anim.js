@@ -13,9 +13,11 @@
     D.a[i].forEach((c, k) => F.push(F[k].map((v, j) => v + e * c * h(k, j))));
     return [...F, D.g[i]];
   };
-  const score = (i, f) => {  // the recovered model: 20 * clip((mean(g f) - 0.5 mean(f^2)) / target, 0, 1)
-    const p = f.reduce((s, v, j) => s + (D.g[i][j] * v - 0.5 * v * v) / N, 0);
-    return 20 * Math.min(1, Math.max(0, p / D.T[i]));
+  // The recovered model: 20 * clip(payoff / target, 0, 1), payoff = mean(g f) - 0.5 mean(f^2), target = 0.5 mean(g^2).
+  // The target comes from g, not the 4 decimal D.T: that matches the measured stage scores to 0.06 points per test.
+  const score = (i, f) => {
+    const g = D.g[i], p = f.reduce((s, v, j) => s + g[j] * v - 0.5 * v * v, 0);
+    return 20 * Math.min(1, Math.max(0, p / g.reduce((s, v) => s + 0.5 * v * v, 0)));
   };
   const all = D.T.map((_, i) => stages(i));
   const total = all[0].map((_, k) => all.reduce((s, F, i) => s + score(i, F[k]), 0));
